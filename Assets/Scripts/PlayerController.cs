@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         var ray = camera.ScreenPointToRay(Input.mousePosition);
         //var ray = new Ray(camera.transform.position, WorldPosition - camera.transform.position);
-        RaycastHit2D hitInfo = Physics2D.GetRayIntersection(ray);
+        RaycastHit2D hitInfo = Physics2D.GetRayIntersection(ray, 100, LayerMask.GetMask("Default"));
 
         return hitInfo.collider;
     }
@@ -71,8 +71,8 @@ public class PlayerController : MonoBehaviour
             if (collider && collider.TryGetComponent(out IDraggable obj))
             {
                 _audioSource.PlayOneShot(sfx_grab);
-
                 obj.SetDragTarget(this.transform);
+                obj.OnDragStart();
                 _heldObj = obj;
                 _cursorSprite.sprite = MouseDownCursor;
             }
@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _audioSource.PlayOneShot(sfx_release);
-            _heldObj.ClearTarget();
+            _heldObj.OnDrop();
             _heldObj = null;
 
             _cursorSprite.sprite = DefaultCursor;

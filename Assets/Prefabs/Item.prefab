@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8086701068713073158}
-  - component: {fileID: 5425135847782103252}
+  - component: {fileID: 6957302670719392532}
   - component: {fileID: 7246397013878096654}
   m_Layer: 0
   m_Name: Item
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 1215641807730732560}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5425135847782103252
+--- !u!114 &6957302670719392532
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,9 +44,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1562855330691474470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1617220a58902e24db0e4a271ba328cb, type: 3}
+  m_Script: {fileID: 11500000, guid: e3f42081d4fbb18419c65503e0d7fab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _slotMap: {fileID: 426032388421738660}
+  _contactFilter:
+    useTriggers: 1
+    useLayerMask: 1
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 33
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
 --- !u!61 &7246397013878096654
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -149,7 +164,7 @@ GameObject:
   - component: {fileID: 426032388421738660}
   - component: {fileID: 2759527754885566493}
   m_Layer: 0
-  m_Name: Tilemap
+  m_Name: Slot Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -393,7 +408,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.34677342, g: 0.046057325, b: 0.4245283, a: 1}
   m_FlipX: 0
