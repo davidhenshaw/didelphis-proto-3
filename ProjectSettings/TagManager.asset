@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Grid Overlay
+    uniqueID: 1413597519
+    locked: 0
+  - name: Worldspace UI
+    uniqueID: 2954497243
+    locked: 0
