@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6828548667642164800}
   - component: {fileID: 5492633598308260176}
   - component: {fileID: 5588568411975208859}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Slot Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 3841412117284641357}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.3337646, y: 0.5344566, z: -0.018648418}
+  m_LocalPosition: {x: 0, y: 0, z: -0.018648418}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -253,7 +253,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.059592888, g: 0.3018868, b: 0.0042719753, a: 1}
   m_Origin: {x: -3, y: -4, z: 0}
   m_Size: {x: 3, y: 6, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -335,7 +335,8 @@ GameObject:
   - component: {fileID: 922782180258614965}
   - component: {fileID: 298717792859652849}
   - component: {fileID: 3787968888240301695}
-  m_Layer: 0
+  - component: {fileID: 8813498745507652301}
+  m_Layer: 5
   m_Name: Cell Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,6 +373,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tilemap: {fileID: 5492633598308260176}
+  _audioSource: {fileID: 8813498745507652301}
+  sfx_itemRejected: {fileID: 8300000, guid: 611863eceae73594ebcfcd794d5473ff, type: 3}
+  sfx_itemAdded: {fileID: 8300000, guid: e9dba44069c6fcc4b9e3d34bf7ac5dce, type: 3}
+  sfx_itemRemoved: {fileID: 8300000, guid: 4651ac25ca06ba543b290e3dc5e7d26e, type: 3}
 --- !u!61 &3787968888240301695
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -404,7 +409,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.16115022, y: -0.45927835}
+  m_Offset: {x: -1.51, y: -0.98}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -417,6 +422,102 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.9338026, y: 5.947311}
   m_EdgeRadius: 0
+--- !u!82 &8813498745507652301
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503613409419180865}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &5061172175972624939
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,7 +528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3017476652585945825}
   - component: {fileID: 7705263858445850508}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -472,7 +573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1257475757068470955}
   - component: {fileID: 445156345174794209}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -488,7 +589,7 @@ Transform:
   m_GameObject: {fileID: 8427062741263329213}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.018648418}
+  m_LocalPosition: {x: -1.32, y: -0.82, z: -0.018648418}
   m_LocalScale: {x: 5, y: 7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

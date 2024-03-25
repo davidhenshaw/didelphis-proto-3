@@ -12,11 +12,14 @@ public interface IDraggable
 public interface IContainer
 {
     void OnDrop(IContainable containable);
+    bool TryAddItem(IContainable item, Vector2Int insertPos);
+    bool TryRemoveItem(IContainable item);
 }
 
 public interface IContainable
 {
     GameObject Owner { get; }
+    IContainer Container { get; set; }
     Vector3 AnchorLocalOffset { get; }
     Vector2Int[] GetCellRelativePositions();
 }

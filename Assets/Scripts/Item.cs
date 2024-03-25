@@ -6,10 +6,13 @@ using UnityEngine.Tilemaps;
 public class Item : SimpleDraggable, IContainable
 {
     public GameObject Owner => gameObject;
+    public IContainer Container { get; set; }
     /// <summary>
     /// Local position (unity units) of this item's anchor cell
     /// </summary>
     public Vector3 AnchorLocalOffset { get; private set; }
+
+
     [SerializeField]
     [Tooltip("A tilemap that determines how much space this item takes up in a container")]
     private Tilemap _slotMap;
@@ -75,6 +78,17 @@ public class Item : SimpleDraggable, IContainable
         else
             Debug.Log("No container found");
     }
+
+    public override void OnDragStart()
+    {
+        base.OnDragStart();
+        if(Container != null)
+        {
+            Container.TryRemoveItem(this);
+        }
+
+    }
+
     public Vector2Int[] GetCellRelativePositions()
     {
         return _relativePos.ToArray();

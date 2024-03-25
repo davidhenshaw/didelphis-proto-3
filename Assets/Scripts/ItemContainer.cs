@@ -15,8 +15,15 @@ public class ItemContainer : MonoBehaviour, IContainer
     private int MaxSlotRange = 15;
     private Dictionary<Vector2Int, IContainable> _cells = new Dictionary<Vector2Int, IContainable>();
 
+    [Header("SFX")]
+    public AudioSource _audioSource;
+    public AudioClip sfx_itemRejected;
+    public AudioClip sfx_itemAdded;
+    public AudioClip sfx_itemRemoved;
+
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _tilemap = GetComponentInChildren<Tilemap>();
         _grid = GetComponentInChildren<Grid>();
     }
@@ -33,11 +40,15 @@ public class ItemContainer : MonoBehaviour, IContainer
         var nearestPos = _grid.GetCellCenterWorld(nearestCell);
 
         //Check if item can be inserted at cell position
-        if (!CanAddItem(item, (Vector2Int)nearestCell))
+        if (!TryAddItem(item, (Vector2Int)nearestCell))
+        {
+            _audioSource.PlayOneShot(sfx_itemRejected);
             return;
+        }
 
         //Move item to grid position
         item.Owner.transform.position = nearestPos - item.AnchorLocalOffset;
+        _audioSource.PlayOneShot(sfx_itemAdded);
     }
 
     public bool TryAddItem(IContainable item, Vector2Int insertPos)
@@ -47,11 +58,12 @@ public class ItemContainer : MonoBehaviour, IContainer
 
         Vector2Int[] relativePositions = item.GetCellRelativePositions();
 
-        foreach(Vector2Int pos in relativePositions)
+        foreach(Vector2Int relativePos in relativePositions)
         {
-            _cells.Add(pos, item);
+            _cells.Add(relativePos + insertPos, item);
         }
 
+        item.Container = this;
         return true;
     }
 
@@ -66,12 +78,15 @@ public class ItemContainer : MonoBehaviour, IContainer
         var occupiedCells = _cells.Keys.Where((pos) =>
         {
             return _cells[pos].Equals(item);
-        });
+        }).ToArray();
 
         foreach (Vector2Int pos in occupiedCells)
         {
             _cells.Remove(pos);
         }
+
+        item.Container = null;
+        _audioSource.PlayOneShot(sfx_itemRemoved);
         return true;
     }
 
