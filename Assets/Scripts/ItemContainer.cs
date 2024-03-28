@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class ItemContainer : MonoBehaviour, IContainer
+public class ItemContainer : MonoBehaviour, IGridContainer
 {
     [SerializeField]
     [Tooltip("A tilemap that determines which slots in this container are valid")]
@@ -12,8 +12,7 @@ public class ItemContainer : MonoBehaviour, IContainer
 
     private Grid _grid;
 
-    private int MaxSlotRange = 15;
-    private Dictionary<Vector2Int, IContainable> _cells = new Dictionary<Vector2Int, IContainable>();
+    public Dictionary<Vector2Int, IGridContainable> Cells { get; } = new Dictionary<Vector2Int, IGridContainable>();
 
     [Header("SFX")]
     public AudioSource _audioSource;
@@ -28,30 +27,41 @@ public class ItemContainer : MonoBehaviour, IContainer
         _grid = GetComponentInChildren<Grid>();
     }
 
-    public void OnDrop(IContainable draggable)
+    public void OnDrop(IGridContainable draggable)
     {
-        SnapToNearest(draggable);
+        if(AddAndSnapToNearest(draggable))
+            _audioSource.PlayOneShot(sfx_itemAdded);
     }
 
-    public void SnapToNearest(IContainable item)
+    public bool AddAndSnapToNearest(IGridContainable item)
     {
         //Get nearest cell to anchor
-        var nearestCell = _grid.WorldToCell(item.AnchorLocalOffset + item.Owner.transform.position);
+        var nearestCell = _grid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
         var nearestPos = _grid.GetCellCenterWorld(nearestCell);
 
         //Check if item can be inserted at cell position
         if (!TryAddItem(item, (Vector2Int)nearestCell))
         {
             _audioSource.PlayOneShot(sfx_itemRejected);
-            return;
+            return false;
         }
 
         //Move item to grid position
-        item.Owner.transform.position = nearestPos - item.AnchorLocalOffset;
+        item.Owner.transform.position = nearestPos - item.AnchorLocalPosition;
         _audioSource.PlayOneShot(sfx_itemAdded);
+        return true;
     }
 
-    public bool TryAddItem(IContainable item, Vector2Int insertPos)
+    public void SnapToCell(IGridContainable item, Vector2Int cell)
+    {
+        var targetPosition = _grid.GetCellCenterWorld((Vector3Int)cell);
+
+        //Actually move the item
+        item.Owner.transform.position = targetPosition - item.AnchorLocalPosition;
+        return;
+    }
+
+    public bool TryAddItem(IGridContainable item, Vector2Int insertPos)
     {
         if (!CanAddItem(item, insertPos))
             return false;
@@ -60,37 +70,67 @@ public class ItemContainer : MonoBehaviour, IContainer
 
         foreach(Vector2Int relativePos in relativePositions)
         {
-            _cells.Add(relativePos + insertPos, item);
+            Cells.Add(relativePos + insertPos, item);
         }
 
         item.Container = this;
+        //SnapToCell(item, insertPos);
         return true;
     }
 
-    public bool TryRemoveItem(IContainable item)
+    public bool TryRemoveItem(IGridContainable item)
     {
-        if (!_cells.ContainsValue(item))
+        if (!Cells.ContainsValue(item))
         {
             Debug.LogWarning($"Item container {this} does not contain item {item}");
             return false;
         }
 
-        var occupiedCells = _cells.Keys.Where((pos) =>
+        var occupiedCells = Cells.Keys.Where((pos) =>
         {
-            return _cells[pos].Equals(item);
+            return Cells[pos].Equals(item);
         }).ToArray();
 
         foreach (Vector2Int pos in occupiedCells)
         {
-            _cells.Remove(pos);
+            Cells.Remove(pos);
         }
 
         item.Container = null;
-        _audioSource.PlayOneShot(sfx_itemRemoved);
         return true;
     }
 
-    public bool CanAddItem(IContainable item, Vector2Int insertPos)
+    public MovementResult CheckAddItem(IGridContainable item, Vector2Int insertPos)
+    {
+        MovementResult result = new MovementResult();
+        List<IGridContainable> blockers = new List<IGridContainable>();
+        //Check if anchor position is free
+        if (!IsCellFree(insertPos))
+        {
+            result.CanMove = false;
+            return result;
+        }
+
+        Vector2Int[] relativePostions = item.GetCellRelativePositions();
+        foreach(Vector2Int cellOffset in relativePostions)
+        {
+            if(IsCellFree(cellOffset + insertPos))
+                continue;
+            else
+            {
+                //Record which cell was blocking the movement
+                if (Cells.TryGetValue(cellOffset + insertPos, out IGridContainable blockingItem))
+                    blockers.Add(blockingItem);
+
+                result.CanMove = false;
+            }
+        }
+
+        result.blockers = blockers.ToArray();
+        return result;
+    }
+
+    public bool CanAddItem(IGridContainable item, Vector2Int insertPos)
     {
         //Check if anchor position is free
         if (!IsCellFree(insertPos))
@@ -110,7 +150,7 @@ public class ItemContainer : MonoBehaviour, IContainer
 
     public bool IsCellFree(Vector2Int cellPos)
     {
-        return IsCellValid(cellPos) && !_cells.ContainsKey(cellPos);
+        return IsCellValid(cellPos) && !Cells.ContainsKey(cellPos);
     }
 
     public bool IsCellValid(Vector2Int cellPos)
@@ -118,4 +158,53 @@ public class ItemContainer : MonoBehaviour, IContainer
         return _tilemap.GetTile((Vector3Int)cellPos) != null;
     }
 
+    public Vector2Int GetAnchorCell(IGridContainable item)
+    {
+        return (Vector2Int)_grid.WorldToCell(item.AnchorWorldPosition);
+    }
+
+    public void OnPick(IGridContainable containable)
+    {
+        _audioSource.PlayOneShot(sfx_itemRemoved);
+        TryRemoveItem(containable);
+    }
+}
+
+public struct MovementResult
+{
+    public IGridContainable[] blockers;
+    public bool CanMove;
+}
+
+public static class ContainerUtil
+{
+    public static int MoveAllItems(IGridContainer container, Vector2Int offset)
+    {
+        HashSet<IGridContainable> seenItems = new HashSet<IGridContainable>();
+        int moved = 0;
+        foreach(var pos in new List<Vector2Int>(container.Cells.Keys))
+        {
+            //The original item may have moved. So we try get value to see if the original item's position is even there
+            if (!container.Cells.TryGetValue(pos, out IGridContainable item))
+                continue;
+            if (seenItems.Contains(item)) // The cells dictionary has unique keys but non-unique values. So it's possible we see the same item twice
+                continue;
+
+            seenItems.Add(item);
+
+            container.TryRemoveItem(item);
+            var itemAnchor = container.GetAnchorCell(item);
+            if (!container.TryAddItem(item, itemAnchor + offset))
+            {//If this item could not be moved by the offset, put it back
+                container.TryAddItem(item, itemAnchor);
+                continue;
+            }
+            else
+            {
+                moved++;
+            }
+        }
+
+        return moved;
+    }
 }

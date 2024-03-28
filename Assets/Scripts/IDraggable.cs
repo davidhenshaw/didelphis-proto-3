@@ -9,17 +9,22 @@ public interface IDraggable
     void SetDragTarget(Transform transform);
 }
 
-public interface IContainer
+public interface IGridContainer
 {
-    void OnDrop(IContainable containable);
-    bool TryAddItem(IContainable item, Vector2Int insertPos);
-    bool TryRemoveItem(IContainable item);
+    Dictionary<Vector2Int, IGridContainable> Cells { get; }
+
+    Vector2Int GetAnchorCell(IGridContainable item);
+    void OnDrop(IGridContainable containable);
+    void OnPick(IGridContainable containable);
+    bool TryAddItem(IGridContainable item, Vector2Int insertPos);
+    bool TryRemoveItem(IGridContainable item);
 }
 
-public interface IContainable
+public interface IGridContainable
 {
     GameObject Owner { get; }
-    IContainer Container { get; set; }
-    Vector3 AnchorLocalOffset { get; }
+    IGridContainer Container { get; set; }
+    Vector3 AnchorLocalPosition { get; }
+    Vector3 AnchorWorldPosition { get; }
     Vector2Int[] GetCellRelativePositions();
 }

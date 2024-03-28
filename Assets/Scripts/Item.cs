@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Item : SimpleDraggable, IContainable
+public class Item : SimpleDraggable, IGridContainable
 {
     public GameObject Owner => gameObject;
-    public IContainer Container { get; set; }
+    public IGridContainer Container { get; set; }
     /// <summary>
     /// Local position (unity units) of this item's anchor cell
     /// </summary>
-    public Vector3 AnchorLocalOffset { get; private set; }
+    public Vector3 AnchorLocalPosition { get; private set; }
 
+    public Vector3 AnchorWorldPosition
+    {
+        get
+        {
+            return AnchorLocalPosition + Owner.transform.position;
+        }
+    }
 
     [SerializeField]
     [Tooltip("A tilemap that determines how much space this item takes up in a container")]
@@ -54,7 +61,7 @@ public class Item : SimpleDraggable, IContainable
             {
                 anchorFound = true;
                 _anchorCell = (Vector2Int)pos;
-                AnchorLocalOffset = grid.GetCellCenterLocal((Vector3Int)_anchorCell);
+                AnchorLocalPosition = grid.GetCellCenterLocal((Vector3Int)_anchorCell);
             }
 
             // Calculate current cell's position offset and add to list
@@ -70,7 +77,7 @@ public class Item : SimpleDraggable, IContainable
         var containers = new Collider2D[1];
         if(Collider.OverlapCollider(_contactFilter, containers) > 0)
         {
-            if (containers[0].TryGetComponent(out IContainer container))
+            if (containers[0].TryGetComponent(out IGridContainer container))
             {
                 container.OnDrop(this);
             }
@@ -84,7 +91,7 @@ public class Item : SimpleDraggable, IContainable
         base.OnDragStart();
         if(Container != null)
         {
-            Container.TryRemoveItem(this);
+            Container.OnPick(this);
         }
 
     }
