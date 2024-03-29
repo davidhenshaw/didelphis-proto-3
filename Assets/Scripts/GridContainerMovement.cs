@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GridContainerMovement : MonoBehaviour
 {
-    public ItemContainer _container;
+    public ItemContainer Container;
 
     private Dictionary<IGridContainable, Vector2Int> _desiredMovements = new Dictionary<IGridContainable, Vector2Int>();
 
@@ -26,15 +26,15 @@ public class GridContainerMovement : MonoBehaviour
         while (currItem != null)
         {
             //Remove Item and reinsert in desired cell
-            var anchor = _container.GetAnchorCell(currItem.Value);
-            _container.TryRemoveItem(currItem.Value);
+            var anchor = Container.GetAnchorCell(currItem.Value);
+            Container.TryRemoveItem(currItem.Value);
 
-            var moved = _container.TryAddItem(currItem.Value, anchor + _desiredMovements[currItem.Value]);
+            var moved = Container.TryAddItem(currItem.Value, anchor + _desiredMovements[currItem.Value]);
 
             if (moved)
-                _container.SnapToCell(currItem.Value, anchor + _desiredMovements[currItem.Value]);
+                Container.SnapToCell(currItem.Value, anchor + _desiredMovements[currItem.Value]);
             else
-                _container.TryAddItem(currItem.Value, anchor);
+                Container.TryAddItem(currItem.Value, anchor);
 
             currItem = currItem.Next;
         }
@@ -49,16 +49,16 @@ public class GridContainerMovement : MonoBehaviour
             if (_dependencyChain.Contains(item))
                 continue;
 
-            var itemAnchor = _container.GetAnchorCell(item);
+            var itemAnchor = Container.GetAnchorCell(item);
 
-            if (!_container.TryRemoveItem(item))
+            if (!Container.TryRemoveItem(item))
             {//If this item was never in the container....uh...idk how that would happen
                 Debug.LogWarning("I can't believe you've done this");
                 continue;
             }
 
-            MovementResult result = _container.CheckAddItem(item, itemAnchor + _desiredMovements[item]);
-            _container.TryAddItem(item, itemAnchor);
+            MovementResult result = Container.CheckAddItem(item, itemAnchor + _desiredMovements[item]);
+            Container.TryAddItem(item, itemAnchor);
 
             if(result.CanMove == false || result.blockers == null)
             {

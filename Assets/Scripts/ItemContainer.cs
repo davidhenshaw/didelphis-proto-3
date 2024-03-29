@@ -168,6 +168,15 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         _audioSource.PlayOneShot(sfx_itemRemoved);
         TryRemoveItem(containable);
     }
+
+    private void OnDestroy()
+    {
+        var toDestroy = Cells.Values.Select((item) => { return item.Owner; });
+        foreach(GameObject obj in toDestroy)
+        {
+            Destroy(obj);
+        }
+    }
 }
 
 public struct MovementResult

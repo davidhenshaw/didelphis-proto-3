@@ -29,8 +29,25 @@ public class ContainerController : MonoBehaviour
         InvokeRepeating(nameof(DoMove), 0, _moveInterval);
     }
 
+    [ContextMenu("Destroy Container")]
+    private void CloseContainer()
+    {
+        Destroy(_container.gameObject);
+    }
+
+    private void OnGUI()
+    {
+        if ( GUILayout.Button("Done!", GUILayout.MinHeight(50), GUILayout.MinWidth(200)) )
+        {
+            CloseContainer();
+        }
+    }
+
     private void DoMove()
     {
+        if (!_container)
+            return;
+
         foreach(var item in _container.Cells.Values.Distinct())
         {
             _mover.RegisterMove(item, _moveOffset);
