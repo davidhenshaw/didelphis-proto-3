@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,8 @@ using UnityEngine;
 public class ContainerController : MonoBehaviour
 {
     [SerializeField] private ItemContainer _container;
+    [SerializeField] private GameObject _containerPrefab;
+
     [SerializeField]
     private GridContainerMovement _mover;
 
@@ -32,7 +35,8 @@ public class ContainerController : MonoBehaviour
     [ContextMenu("Destroy Container")]
     private void CloseContainer()
     {
-        Destroy(_container.gameObject);
+        if(_container)
+            Destroy(_container.gameObject);
     }
 
     private void OnGUI()
@@ -41,6 +45,20 @@ public class ContainerController : MonoBehaviour
         {
             CloseContainer();
         }
+
+        if ( GUILayout.Button("Spawn Container",  GUILayout.MinHeight(50), GUILayout.MinWidth(200)) )
+        {
+            SpawnContainer();
+        }
+    }
+
+    private void SpawnContainer()
+    {
+        if (_container)
+            return;
+        ItemContainer newContainer = Instantiate(_containerPrefab, transform).GetComponent<ItemContainer>();
+        _container = newContainer;
+        _mover.Container = newContainer;
     }
 
     private void DoMove()

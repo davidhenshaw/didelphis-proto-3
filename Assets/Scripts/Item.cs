@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,25 @@ using UnityEngine.Tilemaps;
 
 public class Item : SimpleDraggable, IGridContainable
 {
+    public static readonly float[][] ROTATION_NEG_90_MATRIX =
+    {
+        new float[]{ 0, -1},
+        new float[]{ 1, 0}
+    };
+
+    public static readonly float[][] ROTATION_90_MATRIX = {
+        new float[]{ 0, 1},
+        new float[]{ -1, 0}
+    };
+
+    public static readonly float[][] IDENTITY =
+    {
+        new float[]{1,0},
+        new float[]{0,1}
+    };
+
+    public event Action Disabled;
+
     public GameObject Owner => gameObject;
     public IGridContainer Container { get; set; }
     /// <summary>
@@ -16,7 +36,8 @@ public class Item : SimpleDraggable, IGridContainable
     {
         get
         {
-            return AnchorLocalPosition + Owner.transform.position;
+            //return AnchorLocalPosition + Owner.transform.position;
+            return _slotMapGrid.GetCellCenterWorld((Vector3Int)_anchorCell);
         }
     }
 
@@ -32,6 +53,7 @@ public class Item : SimpleDraggable, IGridContainable
     /// Reference point for all item's cell positions
     /// </summary>
     private Vector2Int _anchorCell;
+    private Grid _slotMapGrid;
     protected Collider2D Collider;
 
     [SerializeField]
@@ -42,7 +64,7 @@ public class Item : SimpleDraggable, IGridContainable
         //Make sure the tile map is as small as it can be
         _slotMap.CompressBounds();
 
-        var grid = GetComponentInChildren<Grid>();
+        _slotMapGrid = GetComponentInChildren<Grid>();
         Collider = GetComponent<Collider2D>();
 
         BoundsInt bounds = _slotMap.cellBounds;
@@ -61,7 +83,7 @@ public class Item : SimpleDraggable, IGridContainable
             {
                 anchorFound = true;
                 _anchorCell = (Vector2Int)pos;
-                AnchorLocalPosition = grid.GetCellCenterLocal((Vector3Int)_anchorCell);
+                AnchorLocalPosition = _slotMapGrid.GetCellCenterLocal((Vector3Int)_anchorCell);
             }
 
             // Calculate current cell's position offset and add to list
@@ -96,8 +118,67 @@ public class Item : SimpleDraggable, IGridContainable
 
     }
 
+    [ContextMenu("Rotate CW")]
+    public void RotateCW()
+    {
+        Rotate(RotationType.ClockWise);
+    }
+
+    public void Rotate(RotationType rotationType)
+    {
+        float rotationDegrees = 0;
+        float[][] rotMatrix = IDENTITY;
+        switch (rotationType)
+        {
+            case RotationType.ClockWise:
+                rotationDegrees = -90;
+                rotMatrix = ROTATION_90_MATRIX;
+                break;
+            case RotationType.CounterClockWise:
+                rotationDegrees = 90;
+                rotMatrix = ROTATION_NEG_90_MATRIX;
+                break;
+        }
+
+        //If this item is already in a container, don't rotate it
+        if (Container != null)
+            return;
+
+        //Rotate the cell positions
+        List<Vector2Int> newPositions = new List<Vector2Int>();
+        foreach(var cell in _relativePos)
+        {
+            var newX = Mathf.FloorToInt(cell.x * rotMatrix[0][0] + cell.y * rotMatrix[0][1]);
+            var newY = Mathf.FloorToInt(cell.x * rotMatrix[1][0] + cell.y * rotMatrix[1][1]);
+
+            newPositions.Add(new Vector2Int(newX, newY));
+        }
+
+        _relativePos = newPositions;
+        //Rotate the transform
+        transform.RotateAround(AnchorWorldPosition, Vector3.forward, rotationDegrees);
+        RecalculateAnchorWorldPos();
+    }
+
+    private void RecalculateAnchorWorldPos()
+    {
+        AnchorLocalPosition = _slotMapGrid.GetCellCenterWorld((Vector3Int)_anchorCell) - transform.position;
+    }
+
     public Vector2Int[] GetCellRelativePositions()
     {
         return _relativePos.ToArray();
     }
+
+    private void OnDisable()
+    {
+        Disabled?.Invoke();   
+    }
+
+    public enum RotationType
+    {
+        ClockWise, 
+        CounterClockWise,
+    }
 }
+

@@ -375,7 +375,7 @@ MonoBehaviour:
   _tilemap: {fileID: 5492633598308260176}
   _audioSource: {fileID: 8813498745507652301}
   sfx_itemRejected: {fileID: 8300000, guid: 611863eceae73594ebcfcd794d5473ff, type: 3}
-  sfx_itemAdded: {fileID: 8300000, guid: e9dba44069c6fcc4b9e3d34bf7ac5dce, type: 3}
+  sfx_itemAdded: {fileID: 8300000, guid: 0db6bf18d931a974ba3d535a79f0e05a, type: 3}
   sfx_itemRemoved: {fileID: 8300000, guid: 4651ac25ca06ba543b290e3dc5e7d26e, type: 3}
 --- !u!61 &3787968888240301695
 BoxCollider2D:

@@ -27,4 +27,5 @@ public interface IGridContainable
     Vector3 AnchorLocalPosition { get; }
     Vector3 AnchorWorldPosition { get; }
     Vector2Int[] GetCellRelativePositions();
+    void Rotate(Item.RotationType rotationType);
 }

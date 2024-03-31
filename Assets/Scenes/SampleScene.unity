@@ -146,9 +146,9 @@ GameObject:
   - component: {fileID: 266172227}
   - component: {fileID: 266172229}
   m_Layer: 0
-  m_Name: Gravity Controller
+  m_Name: Container Controller
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 419385456094870383, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _container: {fileID: 244694922}
+  _containerPrefab: {fileID: 4503613409419180865, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
   _mover: {fileID: 266172229}
   _moveOffset: {x: 0, y: -1}
   _moveInterval: 0.8
@@ -177,7 +178,7 @@ Transform:
   m_GameObject: {fileID: 266172226}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.1049669, y: -0.09554228, z: 0.07901857}
+  m_LocalPosition: {x: 3.35, y: 0.12, z: 0.07901857}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -302,11 +303,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6808095163674438884, guid: 5e963587763023049885ade6d6e938c8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.04
+      value: -3.47
       objectReference: {fileID: 0}
     - target: {fileID: 6808095163674438884, guid: 5e963587763023049885ade6d6e938c8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.05
+      value: 2.32
       objectReference: {fileID: 0}
     - target: {fileID: 6808095163674438884, guid: 5e963587763023049885ade6d6e938c8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -345,6 +346,55 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e963587763023049885ade6d6e938c8, type: 3}
+--- !u!1 &2066225474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2066225476}
+  - component: {fileID: 2066225475}
+  m_Layer: 0
+  m_Name: ItemSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2066225475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066225474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4c3b6098d8402441a65adf8264701dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPrefabs:
+  - {fileID: 4319775685498655428, guid: 5e963587763023049885ade6d6e938c8, type: 3}
+  - {fileID: 1562855330691474470, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+  bounds: {x: 1.87, y: 3.02}
+  spawnCount: 5
+--- !u!4 &2066225476
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066225474}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.76, y: 0.25, z: 0.06774378}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1072424722121657006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -540,14 +590,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 298717792859652849, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
-      propertyPath: sfx_itemAdded
-      value: 
-      objectReference: {fileID: 8300000, guid: 0db6bf18d931a974ba3d535a79f0e05a, type: 3}
-    - target: {fileID: 298717792859652849, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
-      propertyPath: sfx_itemRejected
-      value: 
-      objectReference: {fileID: 8300000, guid: 611863eceae73594ebcfcd794d5473ff, type: 3}
     - target: {fileID: 922782180258614965, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.72
@@ -608,3 +650,4 @@ SceneRoots:
   - {fileID: 980593201}
   - {fileID: 8872852099917020939}
   - {fileID: 266172228}
+  - {fileID: 2066225476}

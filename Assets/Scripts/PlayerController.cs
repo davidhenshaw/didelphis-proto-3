@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     SpriteRenderer _cursorSprite;
 
-    IDraggable _heldObj;
+    Item _heldObj;
     Vector3 WorldPosition;
 
     [Space]
@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var collider = GetMouseRaycast();
-            if (collider && collider.TryGetComponent(out IDraggable obj))
+            if (collider && collider.TryGetComponent(out Item obj))
             {
                 _audioSource.PlayOneShot(sfx_grab);
                 obj.SetDragTarget(this.transform);
@@ -78,13 +78,20 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (_heldObj == null)
-            return;
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetButtonDown("RotateCW"))
         {
+            _heldObj.Rotate(Item.RotationType.ClockWise);
             _audioSource.PlayOneShot(sfx_rotate);
         }
+
+        if(Input.GetButtonDown("RotateCCW"))
+        {
+            _heldObj.Rotate(Item.RotationType.CounterClockWise);
+            _audioSource.PlayOneShot(sfx_rotate);
+        }
+ 
+        if (_heldObj == null)
+            return;
  
         if (Input.GetMouseButtonUp(0))
         {
