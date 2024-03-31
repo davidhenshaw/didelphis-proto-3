@@ -20,6 +20,11 @@ public class ContainerController : MonoBehaviour
     [Min(0f)]
     float _moveInterval = 1;
 
+    [Header("SFX")]
+    public AudioSource _audio;
+    public AudioClip sfx_bagDone;
+    public AudioClip sfx_bagSpawn;
+
     WaitForSeconds _waitForMove;
 
     private void Awake()
@@ -36,7 +41,10 @@ public class ContainerController : MonoBehaviour
     private void CloseContainer()
     {
         if(_container)
+        {
+            _audio.PlayOneShot(sfx_bagDone);
             Destroy(_container.gameObject);
+        }
     }
 
     private void OnGUI()
@@ -56,9 +64,11 @@ public class ContainerController : MonoBehaviour
     {
         if (_container)
             return;
+
         ItemContainer newContainer = Instantiate(_containerPrefab, transform).GetComponent<ItemContainer>();
         _container = newContainer;
         _mover.Container = newContainer;
+        _audio.PlayOneShot(sfx_bagSpawn);
     }
 
     private void DoMove()

@@ -6,6 +6,8 @@ public class ItemSpawner : MonoBehaviour
 {
     static int ItemCount;
 
+    public bool SpawnOnAwake = true;
+
     [SerializeField]
     GameObject[] itemPrefabs;
 
@@ -15,6 +17,18 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField]
     [Min(1)]
     int spawnCount = 5;
+
+    private AudioSource _audio;
+
+    [Header("SFX")]
+    public AudioClip sfx_spawn;
+
+    private void Start()
+    {
+        _audio = AudioService.AudioSource;
+        SpawnRandom(5);    
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
@@ -38,7 +52,7 @@ public class ItemSpawner : MonoBehaviour
     {
         ItemCount--;
 
-        if(ItemCount <= 0)
+        if(ItemCount <= 0 && gameObject != null)
         {
             SpawnRandom(5);
         }
@@ -65,6 +79,7 @@ public class ItemSpawner : MonoBehaviour
             items[i] = SpawnRandom();
         }
 
+        _audio.PlayOneShot(sfx_spawn);
         return items;
     }
 }

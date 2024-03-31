@@ -78,6 +78,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (_heldObj == null)
+            return;
         if(Input.GetButtonDown("RotateCW"))
         {
             _heldObj.Rotate(Item.RotationType.ClockWise);
@@ -90,8 +92,6 @@ public class PlayerController : MonoBehaviour
             _audioSource.PlayOneShot(sfx_rotate);
         }
  
-        if (_heldObj == null)
-            return;
  
         if (Input.GetMouseButtonUp(0))
         {

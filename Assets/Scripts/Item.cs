@@ -56,11 +56,14 @@ public class Item : SimpleDraggable, IGridContainable
     private Grid _slotMapGrid;
     protected Collider2D Collider;
 
+    private bool appQuitting = false;
+
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
     private void Start()
     {
+        Application.quitting += () => appQuitting = true;
         //Make sure the tile map is as small as it can be
         _slotMap.CompressBounds();
 
@@ -172,7 +175,8 @@ public class Item : SimpleDraggable, IGridContainable
 
     private void OnDisable()
     {
-        Disabled?.Invoke();   
+        if(!appQuitting)
+            Disabled?.Invoke();   
     }
 
     public enum RotationType
