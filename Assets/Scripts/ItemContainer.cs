@@ -13,6 +13,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     private Grid _grid;
 
     public Dictionary<Vector2Int, IGridContainable> Cells { get; } = new Dictionary<Vector2Int, IGridContainable>();
+    public int CellCapacity { get; private set; }
 
     [Header("SFX")]
     public AudioSource _audioSource;
@@ -27,6 +28,26 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         _grid = GetComponentInChildren<Grid>();
     }
 
+    private void Start()
+    {
+        CountCellCapacity();
+    }
+
+    private void CountCellCapacity()
+    {
+        BoundsInt bounds = _tilemap.cellBounds;
+
+        CellCapacity = 0;
+        foreach (Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if (_tilemap.GetTile(pos))
+            {//if the tilemap contains a tile at this position, count it toward the capacity
+                CellCapacity++;
+            }
+        }
+
+
+    }
     public void OnDrop(IGridContainable draggable)
     {
         if(AddAndSnapToNearest(draggable))

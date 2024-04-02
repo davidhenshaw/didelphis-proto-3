@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class ContainerController : MonoBehaviour
 {
+    public static Action<ItemContainer> ContainerClosed;
+
     [SerializeField] private ItemContainer _container;
     [SerializeField] private GameObject _containerPrefab;
 
@@ -43,6 +45,7 @@ public class ContainerController : MonoBehaviour
         if(_container)
         {
             _audio.PlayOneShot(sfx_bagDone);
+            ContainerClosed?.Invoke(_container);
             Destroy(_container.gameObject);
         }
     }
