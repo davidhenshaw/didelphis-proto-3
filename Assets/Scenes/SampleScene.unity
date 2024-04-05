@@ -204,7 +204,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &68475893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1209,8 +1209,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpawnOnAwake: 1
   itemPrefabs:
-  - {fileID: 4319775685498655428, guid: 5e963587763023049885ade6d6e938c8, type: 3}
   - {fileID: 1562855330691474470, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+  - {fileID: 4319775685498655428, guid: 5e963587763023049885ade6d6e938c8, type: 3}
+  - {fileID: 8687801053847007037, guid: 0a3d23676142f894eabfc839da038f99, type: 3}
+  - {fileID: 1281164574987672594, guid: cc50dc24acd25d947aff1148ccefc779, type: 3}
+  - {fileID: 5125556704353723941, guid: dc4520374e53ae8429e279cbd5c9b404, type: 3}
   bounds: {x: 1.87, y: 3.02}
   spawnCount: 5
   sfx_spawn: {fileID: 8300000, guid: d069d6407b9814242aecb14003a8e210, type: 3}
