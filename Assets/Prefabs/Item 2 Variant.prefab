@@ -148,6 +148,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Item 2 Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 6957302670719392532, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+      propertyPath: Attributes
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7246397013878096654, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_Size.x
       value: 2.099827

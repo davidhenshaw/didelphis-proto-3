@@ -41,6 +41,10 @@ public class Item : SimpleDraggable, IGridContainable
         }
     }
 
+    public ItemAttribute Attributes;
+
+    public List<ItemProperty> Properties { get; private set; }
+
     [SerializeField]
     [Tooltip("A tilemap that determines how much space this item takes up in a container")]
     private Tilemap _slotMap;
@@ -50,7 +54,7 @@ public class Item : SimpleDraggable, IGridContainable
     /// </summary>
     private List<Vector2Int> _relativePos = new List<Vector2Int>();
     /// <summary>
-    /// Reference point for all item's cell positions
+    /// Reference point on local grid for all item's cell positions
     /// </summary>
     private Vector2Int _anchorCell;
     private Grid _slotMapGrid;
@@ -60,6 +64,15 @@ public class Item : SimpleDraggable, IGridContainable
 
     [SerializeField]
     protected ContactFilter2D _contactFilter;
+
+    private void Awake()
+    {
+        Properties = new List<ItemProperty>();
+        foreach(var property in GetComponents<ItemProperty>())
+        {
+            Properties.Add(property);
+        }
+    }
 
     private void Start()
     {
@@ -173,6 +186,12 @@ public class Item : SimpleDraggable, IGridContainable
         return _relativePos.ToArray();
     }
 
+    public void RemoveLocalCell(Vector2Int cell)
+    {
+        _relativePos.Remove(cell);
+        _slotMap.SetTile((Vector3Int)(_anchorCell+cell), null);
+    }
+
     private void OnDisable()
     {
         if(!appQuitting)
@@ -184,5 +203,16 @@ public class Item : SimpleDraggable, IGridContainable
         ClockWise, 
         CounterClockWise,
     }
+}
+
+[System.Flags]
+public enum ItemAttribute
+{
+    None, Heavy, Fragile, Crushable
+}
+
+public enum ItemStatus
+{
+    Broken
 }
 

@@ -63,6 +63,7 @@ public class ContainerController : MonoBehaviour
         }
     }
 
+
     private void SpawnContainer()
     {
         if (_container)
@@ -79,11 +80,23 @@ public class ContainerController : MonoBehaviour
         if (!_container)
             return;
 
-        foreach(var item in _container.Cells.Values.Distinct())
+        var cellsToRemove = new List<Vector2Int>();
+
+        foreach (var item in _container.Cells.Values.Distinct())
         {
             _mover.RegisterMove(item, _moveOffset);
+            var itemProperties = item.Owner.GetComponents<ItemProperty>();
+            foreach (var property in itemProperties)
+            {
+                property.Invoke();
+                cellsToRemove.AddRange(property.GetCellsToRemove());
+            }
         }
 
+        foreach(var cell in cellsToRemove)
+        {
+            _container.Cells.Remove(cell);
+        }
         _mover.DoMoves();
     }
 }
