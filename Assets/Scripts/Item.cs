@@ -26,6 +26,8 @@ public class Item : SimpleDraggable, IGridContainable
     public event Action Disabled;
 
     public GameObject Owner => gameObject;
+    public Orientation Orientation { get; private set; }
+
     public IGridContainer Container { get; set; }
     /// <summary>
     /// Local position (unity units) of this item's anchor cell
@@ -149,10 +151,12 @@ public class Item : SimpleDraggable, IGridContainable
             case RotationType.ClockWise:
                 rotationDegrees = -90;
                 rotMatrix = ROTATION_90_MATRIX;
+                Orientation = (Orientation) (((int)this.Orientation + 1) % 4);
                 break;
             case RotationType.CounterClockWise:
                 rotationDegrees = 90;
                 rotMatrix = ROTATION_NEG_90_MATRIX;
+                Orientation = (Orientation) (((int)this.Orientation + 3) % 4);
                 break;
         }
 
@@ -168,11 +172,21 @@ public class Item : SimpleDraggable, IGridContainable
             var newY = Mathf.FloorToInt(cell.x * rotMatrix[1][0] + cell.y * rotMatrix[1][1]);
 
             newPositions.Add(new Vector2Int(newX, newY));
+
+            //Replace tileset data positions
+            var localGridCell = (Vector3Int)(_anchorCell + cell);
+            var newGridCell = (Vector3Int)(_anchorCell + new Vector2Int(newX, newY));
+            var tile = _slotMap.GetTile(localGridCell);
+            _slotMap.SetTile(localGridCell, null);
+            _slotMap.SetTile(newGridCell, tile);
         }
 
+
+
         _relativePos = newPositions;
-        //Rotate the transform
-        transform.RotateAround(AnchorWorldPosition, Vector3.forward, rotationDegrees);
+        //Rotate the sprite
+        var spriteTf = GetComponentInChildren<SpriteRenderer>().transform;
+        spriteTf.RotateAround(AnchorWorldPosition, Vector3.forward, rotationDegrees);
         RecalculateAnchorWorldPos();
     }
 
@@ -203,6 +217,7 @@ public class Item : SimpleDraggable, IGridContainable
         ClockWise, 
         CounterClockWise,
     }
+
 }
 
 [System.Flags]

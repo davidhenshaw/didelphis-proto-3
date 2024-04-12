@@ -23,9 +23,19 @@ public interface IGridContainer
 public interface IGridContainable
 {
     GameObject Owner { get; }
+    Orientation Orientation { get; }
     IGridContainer Container { get; set; }
     Vector3 AnchorLocalPosition { get; }
     Vector3 AnchorWorldPosition { get; }
     Vector2Int[] GetCellRelativePositions();
     void Rotate(Item.RotationType rotationType);
+
+}
+
+public enum Orientation
+{
+    Up = 0,
+    Right = 1,
+    Down = 2, 
+    Left = 3,
 }

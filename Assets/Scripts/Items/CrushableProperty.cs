@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class CrushableProperty : ItemProperty, IPropertyHandler
 {
     private List<Vector2Int> _toRemove = new List<Vector2Int>();
     bool isCrushed = false;
+
+    public Sprite CrushedSpriteVertical;
+    public Sprite CrushedSpriteHorizontal;
+
     public override void Invoke()
     {
     }
@@ -20,11 +26,11 @@ public class CrushableProperty : ItemProperty, IPropertyHandler
     {
         if(property.TryGetComponent(out HeavyProperty heavy))
         {//crush this object
-            CrushItem(heavy.Item);
+            CrushItemVertical(heavy.Item);
         }
     }
 
-    public void CrushItem(Item crusher)
+    public void CrushItemVertical(Item crusher)
     {
         if (isCrushed)
             return;
@@ -63,8 +69,15 @@ public class CrushableProperty : ItemProperty, IPropertyHandler
         {
             Item.RemoveLocalCell(cellToRemove - itemAnchor);
         }
-        //Delete the Tilemap (Slotmap) tiles
-        isCrushed = true;
 
+        isCrushed = true;
+        //Swap normal visuals of item with crushed visuals
+        var itemSprite = GetComponentInChildren<SpriteRenderer>();
+
+        itemSprite.sprite = (Item.Orientation == Orientation.Up || Item.Orientation == Orientation.Down) ? 
+            CrushedSpriteVertical : CrushedSpriteHorizontal;
+
+        //Assertions
+        Assert.IsTrue(Item.GetCellRelativePositions().Contains(Vector2Int.zero), "Anchor cell was deleted");
     }
 }
