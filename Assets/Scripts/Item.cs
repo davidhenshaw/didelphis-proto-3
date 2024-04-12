@@ -164,25 +164,31 @@ public class Item : SimpleDraggable, IGridContainable
         if (Container != null)
             return;
 
-        //Rotate the cell positions
+        //Rotate the cell data
         List<Vector2Int> newPositions = new List<Vector2Int>();
+        Dictionary<Vector3Int, TileBase> newTiles = new Dictionary<Vector3Int, TileBase>();
         foreach(var cell in _relativePos)
         {
             var newX = Mathf.FloorToInt(cell.x * rotMatrix[0][0] + cell.y * rotMatrix[0][1]);
             var newY = Mathf.FloorToInt(cell.x * rotMatrix[1][0] + cell.y * rotMatrix[1][1]);
+            var newPosition = new Vector2Int(newX, newY);
 
-            newPositions.Add(new Vector2Int(newX, newY));
+            newPositions.Add(newPosition);
 
-            //Replace tileset data positions
+            // Remove old tiles and cache their new positions
             var localGridCell = (Vector3Int)(_anchorCell + cell);
-            var newGridCell = (Vector3Int)(_anchorCell + new Vector2Int(newX, newY));
+            var newGridCell = (Vector3Int)(_anchorCell + newPosition);
             var tile = _slotMap.GetTile(localGridCell);
+            newTiles.Add(newGridCell, tile);
             _slotMap.SetTile(localGridCell, null);
-            _slotMap.SetTile(newGridCell, tile);
         }
 
-
-
+        // Place previous tiles at new cell positions
+        foreach(var newCell in newTiles.Keys)
+        {
+            _slotMap.SetTile(newCell, newTiles[newCell]);
+        }
+ 
         _relativePos = newPositions;
         //Rotate the sprite
         var spriteTf = GetComponentInChildren<SpriteRenderer>().transform;
