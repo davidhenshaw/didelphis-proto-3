@@ -85,28 +85,7 @@ public class Item : SimpleDraggable, IGridContainable
         _slotMapGrid = GetComponentInChildren<Grid>();
         Collider = GetComponent<Collider2D>();
 
-        BoundsInt bounds = _slotMap.cellBounds;
-        bool anchorFound = false;
-
-        //Record the relative positions to the anchor tile
-        // (the anchor tile is the first tile we look at)
-        foreach(Vector3Int pos in bounds.allPositionsWithin)
-        {
-            if(!_slotMap.GetTile(pos))
-            {
-                continue;
-            }
-
-            if(!anchorFound)
-            {
-                anchorFound = true;
-                _anchorCell = (Vector2Int)pos;
-                AnchorLocalPosition = _slotMapGrid.GetCellCenterLocal((Vector3Int)_anchorCell);
-            }
-
-            // Calculate current cell's position offset and add to list
-            _relativePos.Add((Vector2Int)pos - _anchorCell);
-        }
+        RecalculateAnchor();
     }
 
     public override void OnDrop()
@@ -210,6 +189,33 @@ public class Item : SimpleDraggable, IGridContainable
     {
         _relativePos.Remove(cell);
         _slotMap.SetTile((Vector3Int)(_anchorCell+cell), null);
+    }
+
+    public void RecalculateAnchor()
+    {
+        BoundsInt bounds = _slotMap.cellBounds;
+        bool anchorFound = false;
+
+        _relativePos.Clear();
+        //Record the relative positions to the anchor tile
+        // (the anchor tile is the first tile we look at)
+        foreach(Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if(!_slotMap.GetTile(pos))
+            {
+                continue;
+            }
+
+            if(!anchorFound)
+            {
+                anchorFound = true;
+                _anchorCell = (Vector2Int)pos;
+                AnchorLocalPosition = _slotMapGrid.GetCellCenterLocal((Vector3Int)_anchorCell);
+            }
+
+            // Calculate current cell's position offset and add to list
+            _relativePos.Add((Vector2Int)pos - _anchorCell);
+        }
     }
 
     private void OnDisable()
