@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
+  m_Script: {fileID: 11500000, guid: b2c7800a9b6a6e74bbdaf3704da886b6, type: 3}
   m_Name: fantasy-tileset_tile
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: -849853685, guid: ba96e76f914cff041a1bb60df6e8748e, type: 3}
@@ -34,3 +34,4 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
+  m_Attribute: 0
