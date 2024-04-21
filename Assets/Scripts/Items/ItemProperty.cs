@@ -18,7 +18,7 @@ public abstract class ItemProperty : MonoBehaviour
     /// <summary>
     /// Invoke the property's specific property action
     /// </summary>
-    public abstract void Invoke();
+    public abstract void Tick();
     
     public virtual Vector2Int[] GetCellsToRemove()
     {

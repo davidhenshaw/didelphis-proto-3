@@ -88,7 +88,7 @@ public class ContainerController : MonoBehaviour
             var itemProperties = item.Owner.GetComponents<ItemProperty>();
             foreach (var property in itemProperties)
             {
-                property.Invoke();
+                property.Tick();
                 cellsToRemove.AddRange(property.GetCellsToRemove());
             }
         }

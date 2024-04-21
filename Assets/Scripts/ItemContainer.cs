@@ -121,33 +121,49 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         return true;
     }
 
-    public MovementResult CheckAddItem(IGridContainable item, Vector2Int insertPos)
+    public MovementResult CanMoveItem(IGridContainable item, Vector2Int insertPos)
     {
-        MovementResult result = new MovementResult();
-        List<IGridContainable> blockers = new List<IGridContainable>();
+        MovementResult result = new MovementResult
+        {
+            CanMove = true
+        };
+        List<IGridContainable> collisions = new List<IGridContainable>();
         //Check if anchor position is free
-        if (!IsCellFree(insertPos))
+        if (!IsCellValid(insertPos))
         {
             result.CanMove = false;
             return result;
         }
 
+        //Record which items you would collide with 
         Vector2Int[] relativePostions = item.GetCellRelativePositions();
         foreach(Vector2Int cellOffset in relativePostions)
         {
-            if(IsCellFree(cellOffset + insertPos))
-                continue;
-            else
+            var containerPosition = cellOffset + insertPos;
+            bool willCollide = !IsCellFree(containerPosition) && !IsCellOwnedByItem(item, containerPosition);
+            if (willCollide)
             {
                 //Record which cell was blocking the movement
-                if (Cells.TryGetValue(cellOffset + insertPos, out IGridContainable blockingItem))
-                    blockers.Add(blockingItem);
+                if (Cells.TryGetValue(containerPosition, out IGridContainable blockingItem))
+                    collisions.Add(blockingItem);
 
-                result.CanMove = false;
+                //result.CanMove = false;
             }
         }
 
-        result.blockers = blockers.ToArray();
+        result.collisions = collisions.ToArray();
+
+        if (collisions.Count <= 0)
+            return result;
+
+        //Check if the collisions can be resolved by the item's properties
+        var properties = item.Owner.GetComponents<IGridMovementValidator>();
+        foreach(var property in properties)
+        {
+            if (!property.CanResolveCollision(collisions.ToArray()))
+                result.CanMove = false;
+        }    
+
         return result;
     }
 
@@ -179,6 +195,14 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         return _tilemap.GetTile((Vector3Int)cellPos) != null;
     }
 
+    public bool IsCellOwnedByItem(IGridContainable item, Vector2Int containerCell)
+    {
+        if (!Cells.TryGetValue(containerCell, out IGridContainable itemBelow))
+            return false;
+
+        return item.Equals(itemBelow);
+    }
+
     public Vector2Int GetAnchorCell(IGridContainable item)
     {
         return (Vector2Int)_grid.WorldToCell(item.AnchorWorldPosition);
@@ -202,8 +226,10 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
 public struct MovementResult
 {
-    public IGridContainable[] blockers;
+    public IGridContainable[] collisions;
     public bool CanMove;
+    public Vector2Int DesiredPosition;
+    public Vector2Int DesiredMovement;
 }
 
 public static class ContainerUtil

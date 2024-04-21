@@ -7,6 +7,7 @@ public class GridContainerMovement : MonoBehaviour
     public ItemContainer Container;
 
     private Dictionary<IGridContainable, Vector2Int> _desiredMovements = new Dictionary<IGridContainable, Vector2Int>();
+    private Dictionary<IGridContainable, MovementResult> _movementInfo = new Dictionary<IGridContainable, MovementResult>();
 
     public void RegisterMove(IGridContainable item, Vector2Int movement)
     {
@@ -17,6 +18,7 @@ public class GridContainerMovement : MonoBehaviour
     {
         ExecuteMovements(CalculateExecutionOrder());
         _desiredMovements.Clear();
+        _movementInfo.Clear();
     }
 
     private void ExecuteMovements(LinkedList<IGridContainable> orderedMovements)
@@ -51,30 +53,36 @@ public class GridContainerMovement : MonoBehaviour
 
             var itemAnchor = Container.GetAnchorCell(item);
 
-            if (!Container.TryRemoveItem(item))
-            {//If this item was never in the container....uh...idk how that would happen
-                Debug.LogWarning("I can't believe you've done this");
-                continue;
-            }
+            //if (!Container.TryRemoveItem(item))
+            //{//If this item was never in the container....uh...idk how that would happen
+            //    Debug.LogWarning("I can't believe you've done this");
+            //    continue;
+            //}
 
-            MovementResult result = Container.CheckAddItem(item, itemAnchor + _desiredMovements[item]);
-            Container.TryAddItem(item, itemAnchor);
+            MovementResult result = Container.CanMoveItem(item, itemAnchor + _desiredMovements[item]);
+            //Container.TryAddItem(item, itemAnchor);
 
-            if(result.CanMove == false || result.blockers == null)
+            if(result.CanMove == false || result.collisions == null)
             {
                 _dependencyChain.AddLast(item);
                 continue;
             }
 
-            foreach(IGridContainable blocker in result.blockers)
+            foreach(IGridContainable blocker in result.collisions)
             {
                 if(_dependencyChain.Contains(blocker))
                     continue;
                 _dependencyChain.AddLast(blocker);
             }
             _dependencyChain.AddLast(item);
+            _movementInfo.Add(item, result);
         }
 
         return _dependencyChain;
     } 
+}
+
+public interface IGridMovementValidator
+{
+    bool CanResolveCollision(IGridContainable[] item);
 }

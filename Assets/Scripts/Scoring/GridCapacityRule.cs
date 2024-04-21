@@ -9,12 +9,16 @@ public class GridCapacityRule : ScoreRule<ItemContainer>
     private int _baseScore = 80;
 
     [SerializeField]
+    private int _fullBonus = 50;
+
+    [SerializeField]
     [Range(-100, 0)]
     private int _emptySpacePenalty = -10;
 
     public override int GetScore(ItemContainer obj)
     {
         var emptySpaces = obj.CellCapacity - obj.Cells.Count;
-        return _emptySpacePenalty * emptySpaces + _baseScore;
+        var bonus = emptySpaces == 0 ? _fullBonus : 0;
+        return _emptySpacePenalty * emptySpaces + _baseScore + bonus;
     }
 }

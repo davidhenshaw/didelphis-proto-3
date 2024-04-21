@@ -1267,7 +1267,7 @@ MonoBehaviour:
   - {fileID: 1281164574987672594, guid: cc50dc24acd25d947aff1148ccefc779, type: 3}
   - {fileID: 5125556704353723941, guid: dc4520374e53ae8429e279cbd5c9b404, type: 3}
   bounds: {x: 1.87, y: 3.02}
-  spawnCount: 5
+  spawnCount: 2
   sfx_spawn: {fileID: 8300000, guid: d069d6407b9814242aecb14003a8e210, type: 3}
 --- !u!4 &2066225476
 Transform:

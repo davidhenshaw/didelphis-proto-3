@@ -26,7 +26,7 @@ public class ItemSpawner : MonoBehaviour
     private void Start()
     {
         _audio = AudioService.AudioSource;
-        SpawnRandom(5);    
+        SpawnRandom(spawnCount);    
     }
 
     private void OnDrawGizmos()
@@ -54,7 +54,7 @@ public class ItemSpawner : MonoBehaviour
 
         if(ItemCount <= 0 && gameObject != null)
         {
-            SpawnRandom(5);
+            SpawnRandom(spawnCount);
         }
     }
 

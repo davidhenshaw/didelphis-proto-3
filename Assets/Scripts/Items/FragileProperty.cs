@@ -6,7 +6,7 @@ public class FragileProperty : ItemProperty, IPropertyHandler
 {
     public bool isBroken { get; private set; } = false;
 
-    public override void Invoke()
+    public override void Tick()
     {
         throw new System.NotImplementedException();
     }
