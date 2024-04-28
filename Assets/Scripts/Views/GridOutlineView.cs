@@ -106,6 +106,7 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
         // must be guaranteed to be on external edge of shape
         Vector3 startVertex = Vector3.zero;
 
+        //Generate vertices for each cell
         foreach(var cell in cells)
         {
             var pointNW = _grid.GetCellCenterLocal(cell) + new Vector3(xOffset * -1, yOffset, 0);
@@ -120,8 +121,8 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
             CountVertex(pointSE, cell);
             CountVertex(pointSW, cell);
 
-            //start vertex is the most northwestern point we can find on the shape
-            startVertex = (pointNW.x < startVertex.x) && (pointNW.y < startVertex.y) ? pointNW : startVertex;
+            //starting vertex for traversal is the most northwestern point we can find on the shape
+            startVertex = (pointNW.x <= startVertex.x) && (pointNW.y >= startVertex.y) ? pointNW : startVertex;
         }
         
         List<Vector3> orderedList = new();
@@ -167,9 +168,10 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
 
         for (int i = 0; i < nextChecks.Length; i++)
         {
-            if (vertices.Contains(nextChecks[i] ))
-            {
-                if (!IsJumpValid(currVertex, nextChecks[i], vertexMap))
+            var nextCandidate = nextChecks[i];
+            if (vertices.Contains(nextCandidate))
+            { //Validate jump between vertices
+                if (!IsJumpValid(currVertex, nextCandidate, vertexMap))
                     continue;
 
                 nextVertex = nextChecks[i];
@@ -181,7 +183,11 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
     }
 
     /// <summary>
-    /// For jumps to be valid, <strong>exactly one cell</strong> must be common to the <paramref name="vOrigin"/> and <paramref name="vOther"/> vertex<br/>
+    /// For jumps to be valid:<br/>
+    /// <list type="bullet">
+    /// <item><strong>exactly one cell</strong> must be shared between the <paramref name="vOrigin"/> and <paramref name="vOther"/> vertex</item>
+    /// <item>The cells that share the vertices <paramref name="vOrigin"/> and <paramref name="vOther"/> must be contiguous</item>
+    /// </list>
     /// Otherwise, the jump would either pass through the shape or jump across vertices which shouldn't be connected
     /// </summary>
     /// <param name="vOrigin"></param>
@@ -194,9 +200,20 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
         var otherCells = new HashSet<Vector3Int>(vertexMap[vOther]);
         //Look don't ask how you figured this out but just be glad you did
 
-        //For jumps to be valid, exactly one cell must be common to the origin vertex
+        var sharedCellsPlusOrigin = new HashSet<Vector3Int>(originCells);
+        sharedCellsPlusOrigin.IntersectWith(otherCells);
+        sharedCellsPlusOrigin.UnionWith(originCells);
 
+        //Each of the cells that share the vertices vOrigin and vOther must be contiguous with vOrigin's cells
+        if (!IsContiguous(sharedCellsPlusOrigin))
+            return false;
+
+        //For jumps to be valid, exactly one cell must be common to the origin vertex
         originCells.IntersectWith(otherCells);
+        if(originCells.Count != 1)
+            return false;
+
+        
         return originCells.Count == 1;
     }
 }
