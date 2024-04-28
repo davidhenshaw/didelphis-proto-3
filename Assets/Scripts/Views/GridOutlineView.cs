@@ -36,7 +36,6 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
             return;
 
         var positions = GetPerimeterVertices(model.highlightedCells);
-
         if (positions == null)
             return;
 
@@ -67,18 +66,98 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
 
         return true;
     }
+
+    private bool HasHoles(ICollection<Vector3Int> cells, out Vector3Int[] holes)
+    {
+        const int PREFERRED_Z = 0;
+        const int BOUNDS_PREFERRED_Z = 1;
+        holes = new Vector3Int[0];
+        List<Vector3Int> holesTemp = new List<Vector3Int>();
+        if (cells.Count < 4)
+            return false;
+
+        int maxX=0, maxY=0, minX = 0, minY = 0;
+        foreach (var cell in cells)
+        {
+            maxX = Mathf.Max(maxX, cell.x +1);
+            maxY = Mathf.Max(maxY, cell.y + 1);
+
+            minX = Mathf.Min(minX, cell.x);
+            minY = Mathf.Min(minY, cell.y);
+        }
+
+        BoundsInt bounds = new BoundsInt(minX, minY, 1, Mathf.Abs(maxX - minX), Mathf.Abs(maxY - minY), 1);
+
+        foreach(var boundsPos in bounds.allPositionsWithin)
+        {
+            var cellPos = new Vector3Int(boundsPos.x, boundsPos.y, PREFERRED_Z);
+            //If the "cells" array contains this point, it's obviously not a hole
+            if(cells.Contains(cellPos)) 
+                continue;
+
+            if(IsHole(cellPos, cells, bounds))
+                holesTemp.Add(cellPos);
+        }
+
+        holes = holesTemp.ToArray();
+        return holes.Length > 0;
+    }
+
+    private bool IsHole(Vector3Int cell, ICollection<Vector3Int> space, BoundsInt bounds)
+    {
+        const int PREFERRED_Z = 0;
+        const int BOUNDS_PREFERRED_Z = 1;
+        Vector3Int[] offsets = {
+            Vector3Int.up,
+            Vector3Int.down,
+            Vector3Int.left,
+            Vector3Int.right,
+        };
+
+        for(int i = 0; i < offsets.Length; i++)
+        {
+            var currentOffset = offsets[i];
+            var currPos = cell + currentOffset;
+            currPos.z = BOUNDS_PREFERRED_Z;
+
+            bool borderFound = false;
+            while(bounds.Contains(currPos))
+            {
+                currPos.z = PREFERRED_Z;
+                if(space.Contains(currPos))
+                    borderFound = true;
+
+                currPos += currentOffset;
+            }
+
+            if (!borderFound)
+                return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Given an array of <paramref name="cells"/>, returns the perimeter vertices in an order where a line can be drawn through them. <br/>
     /// Returns null if the cells are not contiguous
     /// </summary>
     /// <param name="cells"></param>
     /// <returns></returns>
-    private Vector3[] GetPerimeterVertices(Vector3Int[] cells)
+    private Vector3[] GetPerimeterVertices(Vector3Int[] cellCollection)
     {
+        List<Vector3Int> cells = new List<Vector3Int>(cellCollection);
+
         if (!IsContiguous(cells))
         {
             Debug.LogWarning("Group of cells is not contiguous and will not be rendered.");
             return null;
+        }
+
+        //if this shape has holes in it, fill them in so that we draw around them
+        if(HasHoles(cells, out Vector3Int[] holes))
+        {
+            foreach( var hole in holes )
+                cells.Add(hole);
         }
 
         Dictionary<Vector3, HashSet<Vector3Int>> vertexMap = new Dictionary<Vector3, HashSet<Vector3Int>>();
@@ -131,6 +210,7 @@ public class GridOutlineView : MonoBehaviour, IView<GridOutlineModel>
         orderedList.Add(startVertex);
         remainingVertices.Remove(startVertex);
 
+        //Traverse vertices in the order that they will be connected
         while(HasNext(remainingVertices, vertexMap,currVertex, _grid.cellSize, out Vector3 nextVertex))
         {
             orderedList.Add(nextVertex);
