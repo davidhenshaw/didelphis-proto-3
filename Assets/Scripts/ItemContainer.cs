@@ -75,6 +75,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
             containerCells.Add((Vector3Int)localCell + containerAnchor);
         }
 
+        _outlineUIModel.isValid = CanAddItem(item, (Vector2Int)containerAnchor);
         _outlineUIModel.highlightedCells = containerCells.ToArray();
         _view.UpdateViewWithModel(_outlineUIModel);
     }

@@ -104,6 +104,7 @@ public abstract class GridHighlightView : MonoBehaviour, IView<GridHighlightMode
 public struct GridHighlightModel
 {
     public Vector3Int[] highlightedCells;
+    public bool isValid;
     public Grid grid;
 }
 

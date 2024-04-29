@@ -735,7 +735,10 @@ MonoBehaviour:
   _lineRenderer: {fileID: 3918234920751450948}
   _model:
     highlightedCells: []
+    isValid: 0
     grid: {fileID: 0}
+  _validColor: {r: 0.19363807, g: 0.5283019, b: 0.13705947, a: 1}
+  _invalidColor: {r: 0.5294118, g: 0.1372549, b: 0.16125289, a: 1}
 --- !u!120 &3918234920751450948
 LineRenderer:
   serializedVersion: 2

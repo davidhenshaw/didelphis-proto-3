@@ -14,6 +14,11 @@ public class GridOutlineView : GridHighlightView
     [SerializeField]
     private GridHighlightModel _model;
 
+    [SerializeField]
+    private Color _validColor = Color.green;
+    [SerializeField]
+    private Color _invalidColor = Color.red;
+
     private void Awake()
     {
         UIEvents.OnGridPlacementPreview += UpdateViewWithModel;
@@ -47,6 +52,8 @@ public class GridOutlineView : GridHighlightView
 
         _lineRenderer.positionCount = positions.Length;
         _lineRenderer.SetPositions(positions);
+        _lineRenderer.startColor = model.isValid ? _validColor : _invalidColor;
+        _lineRenderer.endColor = model.isValid ? _validColor : _invalidColor;
     }
 
     /// <summary>
