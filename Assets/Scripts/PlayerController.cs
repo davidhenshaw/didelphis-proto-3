@@ -80,6 +80,9 @@ public class PlayerController : MonoBehaviour
 
         if (_heldObj == null)
             return;
+
+        _heldObj.OnDrag();
+
         if(Input.GetButtonDown("RotateCW"))
         {
             _heldObj.Rotate(Item.RotationType.ClockWise);

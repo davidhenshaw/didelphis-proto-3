@@ -6,5 +6,5 @@ public class UIEvents
 {
     public delegate void ModelUpdate<TModel>(TModel model);
 
-    public static ModelUpdate<GridOutlineModel> OnGridPlacementPreview;
+    public static ModelUpdate<GridHighlightModel> OnGridPlacementPreview;
 }

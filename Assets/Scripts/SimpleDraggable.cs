@@ -21,6 +21,14 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
     {
         
     }
+    
+    /// <summary>
+    /// Invoked on every frame of the drag
+    /// </summary>
+    public virtual void OnDrag()
+    {
+
+    }
 
     public virtual void OnDrop()
     {

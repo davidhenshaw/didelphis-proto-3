@@ -64,6 +64,7 @@ public class Item : SimpleDraggable, IGridContainable
 
     private bool appQuitting = false;
 
+    private IGridContainer _tempContainer;
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
@@ -92,6 +93,8 @@ public class Item : SimpleDraggable, IGridContainable
     {
         base.OnDrop();
 
+        _tempContainer?.OnHoverEnd();
+
         //Find a container that overlaps this item
         var containers = new Collider2D[1];
         if(Collider.OverlapCollider(_contactFilter, containers) > 0)
@@ -113,6 +116,41 @@ public class Item : SimpleDraggable, IGridContainable
             Container.OnPick(this);
         }
 
+    }
+
+    public override void OnDrag()
+    {
+        base.OnDrag();
+
+        //Find a container that overlaps this item
+        var containers = new Collider2D[1];
+        if(Collider.OverlapCollider(_contactFilter, containers) > 0)
+        {
+            if (containers[0].TryGetComponent(out IGridContainer newContainer))
+            {
+                if (_tempContainer == null)
+                    _tempContainer = newContainer;
+
+                if(newContainer.Equals(_tempContainer))
+                {
+                    _tempContainer.OnHover(this);
+                }
+                else
+                {
+                    _tempContainer.OnHoverEnd();
+                    _tempContainer = newContainer;
+                    _tempContainer.OnHover(this);
+                }
+            }
+        }
+        else
+        {
+            if (_tempContainer != null)
+            {
+                _tempContainer.OnHoverEnd();
+                _tempContainer = null;
+            }
+        }
     }
 
     [ContextMenu("Rotate CW")]

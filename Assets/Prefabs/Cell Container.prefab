@@ -373,6 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tilemap: {fileID: 5492633598308260176}
+  _view: {fileID: 1367653788296325836}
   _audioSource: {fileID: 8813498745507652301}
   sfx_itemRejected: {fileID: 8300000, guid: 611863eceae73594ebcfcd794d5473ff, type: 3}
   sfx_itemAdded: {fileID: 8300000, guid: 0db6bf18d931a974ba3d535a79f0e05a, type: 3}
@@ -732,16 +733,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grid: {fileID: 7705263858445850508}
   _lineRenderer: {fileID: 3918234920751450948}
-  _gridOutlineModel:
-    highlightedCells:
-    - {x: 0, y: 0, z: 0}
-    - {x: 1, y: 0, z: 0}
-    - {x: 1, y: 1, z: 0}
-    - {x: 1, y: 2, z: 0}
-    - {x: 0, y: 2, z: 0}
-    - {x: -1, y: 0, z: 0}
-    - {x: -1, y: 2, z: 0}
-    grid: {fileID: 7705263858445850508}
+  _model:
+    highlightedCells: []
+    grid: {fileID: 0}
 --- !u!120 &3918234920751450948
 LineRenderer:
   serializedVersion: 2

@@ -15,17 +15,26 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     public Dictionary<Vector2Int, IGridContainable> Cells { get; } = new Dictionary<Vector2Int, IGridContainable>();
     public int CellCapacity { get; private set; }
 
+    [Header("UI")]
+    [SerializeField]
+    private GridHighlightView _view;
+
     [Header("SFX")]
     public AudioSource _audioSource;
     public AudioClip sfx_itemRejected;
     public AudioClip sfx_itemAdded;
     public AudioClip sfx_itemRemoved;
 
+    private GridHighlightModel _outlineUIModel;
+
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
         _tilemap = GetComponentInChildren<Tilemap>();
         _grid = GetComponentInChildren<Grid>();
+
+        _outlineUIModel = new();
+        _outlineUIModel.grid = _grid;
     }
 
     private void Start()
@@ -48,8 +57,31 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
 
     }
+
+    public void OnHoverEnd()
+    {
+        _outlineUIModel.highlightedCells = new Vector3Int[0];
+        _view.UpdateViewWithModel(_outlineUIModel);
+    }
+
+    public void OnHover(IGridContainable item)
+    {
+        var containerAnchor = _grid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
+        var nearestPos = _grid.GetCellCenterWorld(containerAnchor);
+
+        List<Vector3Int> containerCells = new List<Vector3Int>();
+        foreach(var localCell in item.GetCellRelativePositions())
+        {
+            containerCells.Add((Vector3Int)localCell + containerAnchor);
+        }
+
+        _outlineUIModel.highlightedCells = containerCells.ToArray();
+        _view.UpdateViewWithModel(_outlineUIModel);
+    }
+
     public void OnDrop(IGridContainable draggable)
     {
+        OnHoverEnd();
         if(AddAndSnapToNearest(draggable))
             _audioSource.PlayOneShot(sfx_itemAdded);
     }

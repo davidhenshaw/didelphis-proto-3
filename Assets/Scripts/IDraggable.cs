@@ -16,8 +16,10 @@ public interface IGridContainer
     Vector2Int GetAnchorCell(IGridContainable item);
     void OnDrop(IGridContainable containable);
     void OnPick(IGridContainable containable);
+    void OnHover(IGridContainable containable);
     bool TryAddItem(IGridContainable item, Vector2Int insertPos);
     bool TryRemoveItem(IGridContainable item);
+    void OnHoverEnd();
 }
 
 public interface IGridContainable
