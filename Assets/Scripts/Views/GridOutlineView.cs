@@ -11,6 +11,7 @@ public class GridOutlineView : GridHighlightView
     [SerializeField]
     private LineRenderer _lineRenderer;
 
+    [HideInInspector]
     [SerializeField]
     private GridHighlightModel _model;
 
