@@ -9,10 +9,26 @@ public class SpringUtil
 {
     public static void CalcDampedSimpleHarmonicMotion(ref float value, ref float velocity, float goalValue, float deltaTime, float frequency, float damping)
     {
+        float xCoef = 1;
+        float dxCoef = 0;
+        float vCoef = 0;
+        float dvCoef = 1;
+
         if(damping < 0) { damping = 0; }
         if(frequency < 0) { frequency = 0; }
 
-        if( damping > 1 + Mathf.Epsilon )
+        if (frequency < Mathf.Epsilon)
+        {
+            float oldPoss = value - goalValue; // update in equilibrium relative space
+            float oldVell = velocity;
+
+            value = oldPoss * xCoef + oldVell * dxCoef + goalValue;
+            velocity = oldPoss * vCoef + oldVell * dvCoef;
+
+            return;
+        }
+
+        if ( damping > 1 + Mathf.Epsilon )
         {
             //over-damped
             float za = -frequency * damping;
@@ -31,8 +47,11 @@ public class SpringUtil
             float z1e1_Over_TwoZb = z1 * e1_Over_TwoZb;
             float z2e2_Over_TwoZb = z2 * e2_Over_TwoZb;
 
-            value = e1_Over_TwoZb * z2 - z2e2_Over_TwoZb + e2;
-            velocity = -e1_Over_TwoZb + e2_Over_TwoZb;
+            xCoef = e1_Over_TwoZb * z2 - z2e2_Over_TwoZb + e2;
+            dxCoef = -e1_Over_TwoZb + e2_Over_TwoZb;
+
+            vCoef = (z1e1_Over_TwoZb - z2e2_Over_TwoZb + e2) * z2;
+            dvCoef = -z1e1_Over_TwoZb + z2e2_Over_TwoZb;
         }
         else if(damping < 1 - Mathf.Epsilon )
         {
@@ -50,8 +69,11 @@ public class SpringUtil
             float expCos = expTerm * cosTerm;
             float expOmegaZetaSin_Over_Alpha = expTerm * omegaZeta * sinTerm * invAlpha;
 
-            value = expCos + expOmegaZetaSin_Over_Alpha;
-            velocity = expSin * invAlpha;
+            xCoef = expCos + expOmegaZetaSin_Over_Alpha;
+            dxCoef = expSin * invAlpha;
+
+            vCoef = -expSin * alpha - omegaZeta * expOmegaZetaSin_Over_Alpha;
+            dvCoef = expCos - expOmegaZetaSin_Over_Alpha;
         }
         else
         {
@@ -60,9 +82,19 @@ public class SpringUtil
             float timeExp = deltaTime * expTerm;
             float timeExpFreq = timeExp * frequency;
 
-            value = timeExpFreq + expTerm;
-            velocity = timeExp;
+            xCoef = timeExpFreq + expTerm;
+            dxCoef = timeExp;
+
+            vCoef = -frequency * timeExpFreq;
+            dvCoef = -timeExpFreq + expTerm;
         }
+
+
+        float oldPos = value - goalValue; // update in equilibrium relative space
+        float oldVel = velocity; 
+
+        value = oldPos * xCoef + oldVel * dxCoef + goalValue;
+        velocity = oldPos * vCoef  + oldVel * dvCoef;
     }
 
 }

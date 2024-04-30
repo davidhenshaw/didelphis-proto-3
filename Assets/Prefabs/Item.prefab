@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3356384257706728023}
   - component: {fileID: 6823021002199473464}
   - component: {fileID: 2172072271752636932}
+  - component: {fileID: 1702640244892786532}
   m_Layer: 0
   m_Name: Item
   m_TagString: Untagged
@@ -49,6 +50,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f42081d4fbb18419c65503e0d7fab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxRotation: 30
+  _springFrequency: 9
+  _springDamping: 0.5
   Attributes: 0
   _slotMap: {fileID: 426032388421738660}
   _contactFilter:
@@ -163,6 +167,22 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 1562855330691474470}
+--- !u!114 &1702640244892786532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1562855330691474470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d927b0d46f3f3ad4fb6538148e5917d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VerticalSquishAmount: 4
+  DefaultVerticalScale: 1
+  _springFrequency: 7
+  _springDamping: 0.9
 --- !u!1 &5135807558033162462
 GameObject:
   m_ObjectHideFlags: 0
