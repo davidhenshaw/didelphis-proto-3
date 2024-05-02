@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Item : SimpleDraggable, IGridContainable
+public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
 {
     public static readonly float[][] ROTATION_NEG_90_MATRIX =
     {
@@ -24,6 +24,7 @@ public class Item : SimpleDraggable, IGridContainable
     };
 
     public event Action Disabled;
+    public event IBroadcastRotation.BroadcastRotationDelegate Rotated;
 
     public GameObject Owner => gameObject;
     public Orientation Orientation { get; private set; }
@@ -153,14 +154,9 @@ public class Item : SimpleDraggable, IGridContainable
         }
     }
 
-    [ContextMenu("Rotate CW")]
-    public void RotateCW()
-    {
-        Rotate(RotationType.ClockWise);
-    }
-
     public void Rotate(RotationType rotationType)
     {
+        float oldRotation = GetComponentInChildren<SpriteRenderer>().transform.eulerAngles.z;
         float rotationDegrees = 0;
         float[][] rotMatrix = IDENTITY;
         switch (rotationType)
@@ -211,6 +207,8 @@ public class Item : SimpleDraggable, IGridContainable
         var spriteTf = GetComponentInChildren<SpriteRenderer>().transform;
         spriteTf.RotateAround(AnchorWorldPosition, Vector3.forward, rotationDegrees);
         RecalculateAnchorWorldPos();
+
+        Rotated?.Invoke(oldRotation, oldRotation + rotationDegrees);
     }
 
     private void RecalculateAnchorWorldPos()

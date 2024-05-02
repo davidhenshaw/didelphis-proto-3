@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3356384257706728023}
   - component: {fileID: 6823021002199473464}
   - component: {fileID: 2172072271752636932}
-  - component: {fileID: 1702640244892786532}
+  - component: {fileID: 1461215676220107181}
   m_Layer: 0
   m_Name: Item
   m_TagString: Untagged
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f42081d4fbb18419c65503e0d7fab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxRotation: 30
+  _maxRotation: 20
   _springFrequency: 9
   _springDamping: 0.5
   Attributes: 0
@@ -167,7 +167,7 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 1562855330691474470}
---- !u!114 &1702640244892786532
+--- !u!114 &1461215676220107181
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,13 +176,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1562855330691474470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d927b0d46f3f3ad4fb6538148e5917d7, type: 3}
+  m_Script: {fileID: 11500000, guid: 9642a2e76d02e3141b1d22a518c3d1f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VerticalSquishAmount: 4
-  DefaultVerticalScale: 1
-  _springFrequency: 7
-  _springDamping: 0.9
+  xMotionResponders:
+  - {fileID: 112938944162848888}
+  yMotionResponders:
+  - {fileID: 4921300279003904169}
+  _springFrequency: 8
+  _springDamping: 0.75
 --- !u!1 &5135807558033162462
 GameObject:
   m_ObjectHideFlags: 0
@@ -471,6 +473,8 @@ GameObject:
   m_Component:
   - component: {fileID: 236191361952322079}
   - component: {fileID: 8935421018207219166}
+  - component: {fileID: 112938944162848888}
+  - component: {fileID: 4921300279003904169}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -545,3 +549,31 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &112938944162848888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7874748431410704412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 138f0567912c66a458a57075d8f3c1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxRotation: 30
+--- !u!114 &4921300279003904169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7874748431410704412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d927b0d46f3f3ad4fb6538148e5917d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VerticalSquishAmount: 0.35
+  DefaultVerticalScale: 1.5
+  autoSetScale: 1

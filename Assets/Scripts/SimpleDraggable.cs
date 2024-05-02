@@ -16,7 +16,7 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
     [Range(-1f, 1f)]
     private float _goalSpringPos = 0;
     private float _springPosition = 0;
-    private float _springVelocity;
+    private float _springVelocity = 0;
 
     [SerializeField]
     private float _springFrequency = 0.4f;
@@ -35,7 +35,7 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
 
     protected virtual void OnSpringValue(float springValue)
     {
-        transform.eulerAngles = new Vector3(0, 0, springValue * _maxRotation * -1);
+        //transform.eulerAngles = new Vector3(0, 0, springValue * _maxRotation * -1);
     }
 
     public virtual void OnDragStart()
@@ -48,21 +48,22 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
     /// </summary>
     public virtual void OnDrag()
     {
-        float dX = transform.position.x - _prevXPosition;
+        //float dX = transform.position.x - _prevXPosition;
 
-        _goalSpringPos = dX > 0 ? 1 : -1;
-        _goalSpringPos = Mathf.Abs(dX) < Mathf.Epsilon ? 0 : _goalSpringPos;
+        //_goalSpringPos = dX > 0 ? 1 : -1;
+        //_goalSpringPos = Mathf.Abs(dX) < Mathf.Epsilon ? 0 : _goalSpringPos;
 
-        _prevXPosition = transform.position.x;
-        SpringUtil.CalcDampedSimpleHarmonicMotion(ref _springPosition, ref _springVelocity, _goalSpringPos, Time.deltaTime, _springFrequency, _springDamping);
-        OnSpringValue(_springPosition);
+        //_prevXPosition = transform.position.x;
+        //SpringUtil.CalcDampedSimpleHarmonicMotion(ref _springPosition, ref _springVelocity, _goalSpringPos, Time.deltaTime, _springFrequency, _springDamping);
+        //OnSpringValue(_springPosition);
     }
 
     public virtual void OnDrop()
     {
         _followTarget = null;
         _offset = Vector2.zero;
-        transform.eulerAngles = Vector3.zero;
+        //transform.eulerAngles = Vector3.zero;
+        //_springVelocity = 0;
     }
 
     public virtual void SetDragTarget(Transform target)
