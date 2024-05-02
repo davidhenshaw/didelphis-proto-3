@@ -156,7 +156,7 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
 
     public void Rotate(RotationType rotationType)
     {
-        float oldRotation = GetComponentInChildren<SpriteRenderer>().transform.eulerAngles.z;
+        float oldRotation = (int)Orientation * -90;
         float rotationDegrees = 0;
         float[][] rotMatrix = IDENTITY;
         switch (rotationType)
@@ -205,10 +205,16 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         _relativePos = newPositions;
         //Rotate the sprite
         var spriteTf = GetComponentInChildren<SpriteRenderer>().transform;
+
         spriteTf.RotateAround(AnchorWorldPosition, Vector3.forward, rotationDegrees);
+        spriteTf.eulerAngles = new Vector3(
+            spriteTf.eulerAngles.x,
+            spriteTf.eulerAngles.y,
+            (int)Orientation * -90
+            );
         RecalculateAnchorWorldPos();
 
-        Rotated?.Invoke(oldRotation, oldRotation + rotationDegrees);
+        Rotated?.Invoke(oldRotation, (int)Orientation * -90);
     }
 
     private void RecalculateAnchorWorldPos()
