@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public interface IDraggable
 {
-    void OnDragStart();
+    delegate void DragEvent(Transform target, Vector3 offset);
+    public event DragEvent DragStarted;
+    public event DragEvent DragFinished;
+    void OnDragStart(Transform target);
     void OnDrop();
-    void SetDragTarget(Transform transform);
 }
 
 public interface IGridContainer

@@ -108,6 +108,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Heavy Item Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 6184324934919091428, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+      propertyPath: m_FlipX
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6184324934919091428, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+      propertyPath: m_FlipY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6184324934919091428, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 803d998eb1ae73f44aab9763d017a818, type: 3}
     - target: {fileID: 7246397013878096654, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_Size.y
       value: 2

@@ -5,24 +5,33 @@ using UnityEngine;
 //[RequireComponent(typeof(Collider2D))]
 public class SimpleDraggable : MonoBehaviour, IDraggable
 {
+    public delegate void DragEvent(Transform target);
+
     private Transform _followTarget;
     private Vector3 _offset;
-
-    private float _prevXPosition = 0;
     [SerializeField]
     private float _maxRotation = 30;
-
-    //[SerializeField]
-    [Range(-1f, 1f)]
-    private float _goalSpringPos = 0;
-    private float _springPosition = 0;
-    private float _springVelocity = 0;
 
     [SerializeField]
     private float _springFrequency = 0.4f;
     [SerializeField]
     private float _springDamping = 0.5f;
- 
+
+    [SerializeField]
+    private DraggableResponder[] _responders;
+
+    public event IDraggable.DragEvent DragStarted;
+    public event IDraggable.DragEvent DragFinished;
+
+    protected virtual void Start()
+    {
+        foreach(var responder in _responders)
+        {
+            DragStarted += responder.OnDragStart;
+            DragFinished += responder.OnDragFinished;
+        }
+    }
+
     // Update is called once per frame
     protected void Update()
     {
@@ -38,9 +47,11 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
         //transform.eulerAngles = new Vector3(0, 0, springValue * _maxRotation * -1);
     }
 
-    public virtual void OnDragStart()
+    public virtual void OnDragStart(Transform target)
     {
-        
+        _followTarget = target;
+        _offset = transform.position - target.position;
+        DragStarted?.Invoke(_followTarget, _offset);
     }
     
     /// <summary>
@@ -60,15 +71,10 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
 
     public virtual void OnDrop()
     {
+        DragFinished?.Invoke(_followTarget, _offset);
         _followTarget = null;
         _offset = Vector2.zero;
         //transform.eulerAngles = Vector3.zero;
         //_springVelocity = 0;
-    }
-
-    public virtual void SetDragTarget(Transform target)
-    {
-        _followTarget = target;
-        _offset = transform.position - target.position;
     }
 }

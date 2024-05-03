@@ -71,8 +71,7 @@ public class PlayerController : MonoBehaviour
             if (collider && collider.TryGetComponent(out Item obj))
             {
                 _audioSource.PlayOneShot(sfx_grab);
-                obj.SetDragTarget(this.transform);
-                obj.OnDragStart();
+                obj.OnDragStart(this.transform);
                 _heldObj = obj;
                 _cursorSprite.sprite = MouseDownCursor;
             }

@@ -69,6 +69,7 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
+
     private void Awake()
     {
         Properties = new List<ItemProperty>();
@@ -76,10 +77,16 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         {
             Properties.Add(property);
         }
+
+        foreach(var rotationListener in GetComponentsInChildren<IRotationListener>())
+        {
+            Rotated += rotationListener.OnRotationChanged;
+        }
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         Application.quitting += () => appQuitting = true;
         //Make sure the tile map is as small as it can be
         _slotMap.CompressBounds();
@@ -109,9 +116,9 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
             Debug.Log("No container found");
     }
 
-    public override void OnDragStart()
+    public override void OnDragStart(Transform target)
     {
-        base.OnDragStart();
+        base.OnDragStart( target);
         if(Container != null)
         {
             Container.OnPick(this);
