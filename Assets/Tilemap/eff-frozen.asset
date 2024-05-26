@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c7800a9b6a6e74bbdaf3704da886b6, type: 3}
   m_Name: eff-frozen
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 1700589879, guid: ba96e76f914cff041a1bb60df6e8748e, type: 3}
+  m_Color: {r: 0.23268957, g: 0.6941074, b: 0.7830189, a: 1}
   m_Transform:
     e00: 1
     e01: 0
@@ -32,6 +32,6 @@ MonoBehaviour:
     e32: 0
     e33: 1
   m_InstancedGameObject: {fileID: 0}
-  m_Flags: 1
-  m_ColliderType: 1
-  m_Attribute: 0
+  m_Flags: 0
+  m_ColliderType: 2
+  m_Attribute: 1

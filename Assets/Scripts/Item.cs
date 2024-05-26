@@ -61,6 +61,10 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
     /// Position of all item's cells relative to the anchor position
     /// </summary>
     private List<Vector2Int> _relativePos = new List<Vector2Int>();
+    private List<Vector2Int> _borderPos = new List<Vector2Int>();
+
+    public Vector2Int[] BorderPositions => _borderPos.ToArray();
+
     /// <summary>
     /// Reference point on local grid for all item's cell positions
     /// </summary>
@@ -227,6 +231,7 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
             (int)Orientation * -90
             );
         RecalculateAnchorWorldPos();
+        RecalculateBorderPositions();
 
         Rotated?.Invoke(oldRotation, (int)Orientation * -90);
     }
@@ -247,12 +252,50 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         _slotMap.SetTile((Vector3Int)(_anchorCell+cell), null);
     }
 
+    public void RecalculateBorderPositions()
+    {
+        BoundsInt bounds = _slotMap.cellBounds;
+
+        _borderPos.Clear();
+        HashSet<Vector2Int> positionSet = new HashSet<Vector2Int>();
+        //Record the relative positions to the anchor tile
+        // (the anchor tile is the first tile we look at)
+        foreach(Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if(!_slotMap.GetTile(pos))
+            {
+                continue;
+            }
+
+            // Calculate current cell's position offset and add to list
+            var offsetPos = (Vector2Int)pos - _anchorCell;
+
+            // Calculate border cells
+            var adjacents = ContainerController.GetAdjacents(offsetPos);
+            foreach(var cell in adjacents)
+            {
+                if (_relativePos.Contains((Vector2Int)cell))
+                    continue;
+
+                positionSet.Add((Vector2Int)cell);
+            }
+        }        
+        
+        //Remove positions on the shape from the set
+        // to reveal only border positions
+        positionSet.ExceptWith(new HashSet<Vector2Int>(_relativePos));
+        _borderPos = new List<Vector2Int>(positionSet);
+
+    }
+
     public void RecalculateAnchor()
     {
         BoundsInt bounds = _slotMap.cellBounds;
         bool anchorFound = false;
 
         _relativePos.Clear();
+        _borderPos.Clear();
+        HashSet<Vector2Int> positionSet = new HashSet<Vector2Int>();
         //Record the relative positions to the anchor tile
         // (the anchor tile is the first tile we look at)
         foreach(Vector3Int pos in bounds.allPositionsWithin)
@@ -270,8 +313,22 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
             }
 
             // Calculate current cell's position offset and add to list
-            _relativePos.Add((Vector2Int)pos - _anchorCell);
+            var offsetPos = (Vector2Int)pos - _anchorCell;
+            _relativePos.Add(offsetPos);
+            positionSet.Add(offsetPos);
+
+            // Calculate border cells
+            var adjacents = ContainerController.GetAdjacents(offsetPos);
+            foreach(var adjacentCell in adjacents)
+            {
+                positionSet.Add((Vector2Int)adjacentCell);
+            }
         }
+
+        //Remove positions on the shape from the set
+        // to reveal only border positions
+        positionSet.ExceptWith(new HashSet<Vector2Int>(_relativePos));
+        _borderPos = new List<Vector2Int>(positionSet);
     }
 
     private void OnDisable()
