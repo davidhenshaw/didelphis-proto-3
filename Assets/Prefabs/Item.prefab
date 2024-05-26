@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8086701068713073158}
   - component: {fileID: 6957302670719392532}
-  - component: {fileID: 3356384257706728023}
   - component: {fileID: 6823021002199473464}
   - component: {fileID: 2172072271752636932}
   - component: {fileID: 1461215676220107181}
@@ -71,20 +70,6 @@ MonoBehaviour:
     maxDepth: 0
     minNormalAngle: 0
     maxNormalAngle: 0
---- !u!114 &3356384257706728023
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562855330691474470}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 489c3e3532c269c4dbfd8c5a935cef66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CrushedSpriteVertical: {fileID: 2747690628134850419, guid: 16037dbd798344f57a526d53d48f5ead, type: 3}
-  CrushedSpriteHorizontal: {fileID: -2135585597343286014, guid: 5aa8b770bc43046bc8d993d0d5b7f4a5, type: 3}
 --- !u!50 &6823021002199473464
 Rigidbody2D:
   serializedVersion: 4
@@ -565,8 +550,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dropShadow: {fileID: 6184324934919091428}
-  _scaleGrowth: 1.25
-  _maxRotation: 30
+  OpacityOnDrag: 0.8
+  ScaleGrowth: 1.25
+  MaxRotation: 30
 --- !u!114 &4921300279003904169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,8 +667,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dropShadow: {fileID: 0}
-  _scaleGrowth: 1.25
-  _maxRotation: 30
+  OpacityOnDrag: 0.8
+  ScaleGrowth: 1.25
+  MaxRotation: 30
 --- !u!114 &5370409660374518977
 MonoBehaviour:
   m_ObjectHideFlags: 0

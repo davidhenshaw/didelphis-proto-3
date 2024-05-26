@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[CreateAssetMenu(menuName = "2D/Tiles/ItemTile")]
 public class ItemTile : Tile
 {
     public static readonly Dictionary<TileAttributes, Type> ATTRIBUTE_MAP = new Dictionary<TileAttributes, Type>() 
