@@ -69,17 +69,25 @@ public class ContainerController : MonoBehaviour
 
     private void OnItemAdded(IGridContainable item, Vector2Int position)
     {
-        var adjacents = GetAdjacents(position);
+        var containerPositions = _container.GetCellsOfItem(item);
 
-        foreach(var adjacentPos in adjacents) { 
-            ItemTile tile = _container.TileMap.GetTile<ItemTile>(adjacentPos);
+        //Loop through all cells of this item
+        foreach(var containerPos in containerPositions) {
+            var adjacents = GetAdjacents(position);
 
-            if(tile == null)
-                continue;
+            //Look at adjacent tiles for item effects
+            foreach ( var adjacent in adjacents) {
+                if (containerPositions.Contains((Vector2Int)adjacent))
+                    continue;
 
-            tile.ApplyItemEffect(item.Owner);
+                ItemTile tile = _container.TileMap.GetTile<ItemTile>(adjacent);
+
+                if (tile == null)
+                    continue;
+
+                tile.ApplyItemEffect(item.Owner);
+            }
         }
-        //throw new NotImplementedException();
     }
 
     private void Start()

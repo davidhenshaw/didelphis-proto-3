@@ -19,6 +19,8 @@ public class ItemTile : Tile
     
     public void ApplyItemEffect(GameObject target)
     {
+        if(m_Attribute == TileAttributes.None) return;
+
         if (target.TryGetComponent(ATTRIBUTE_MAP[m_Attribute], out var effect))
             return;
 
