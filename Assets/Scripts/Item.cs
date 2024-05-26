@@ -50,7 +50,12 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
 
     [SerializeField]
     [Tooltip("A tilemap that determines how much space this item takes up in a container")]
-    private Tilemap _slotMap;
+    public Tilemap _slotMap;
+
+    public Tilemap GetTilemap()
+    {
+        return _slotMap;
+    }
 
     /// <summary>
     /// Position of all item's cells relative to the anchor position
@@ -60,6 +65,8 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
     /// Reference point on local grid for all item's cell positions
     /// </summary>
     private Vector2Int _anchorCell;
+
+    public Vector2Int AnchorCell => _anchorCell;
     private Grid _slotMapGrid;
     protected Collider2D Collider;
 

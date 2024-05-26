@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public interface IDraggable
 {
@@ -33,6 +34,7 @@ public interface IGridContainable
     Vector3 AnchorLocalPosition { get; }
     Vector3 AnchorWorldPosition { get; }
     Vector2Int[] GetCellRelativePositions();
+    Tilemap GetTilemap();
     void Rotate(Item.RotationType rotationType);
 
 }

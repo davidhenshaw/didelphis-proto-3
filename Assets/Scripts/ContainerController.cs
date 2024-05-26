@@ -7,6 +7,38 @@ using UnityEngine;
 
 public class ContainerController : MonoBehaviour
 {
+    public static Vector3Int[] ADJACENCY_OFFSETS = new Vector3Int[]
+    {
+        Vector3Int.up,
+        Vector3Int.right,
+        Vector3Int.down,
+        Vector3Int.left,
+    };
+
+    public static Vector3Int[] GetAdjacents(Vector3Int center)
+    {
+        List<Vector3Int> result = new List<Vector3Int>();
+
+        foreach(Vector3Int offset in  ADJACENCY_OFFSETS)
+        {
+            result.Add(offset + center);
+        }
+
+        return result.ToArray();
+    }
+
+    public static Vector3Int[] GetAdjacents(Vector2Int center)
+    {
+        List<Vector3Int> result = new List<Vector3Int>();
+
+        foreach(Vector3Int offset in  ADJACENCY_OFFSETS)
+        {
+            result.Add(offset + (Vector3Int)center);
+        }
+
+        return result.ToArray();
+    }
+
     public static Action<ItemContainer> ContainerClosed;
 
     [SerializeField] private ItemContainer _container;
@@ -32,6 +64,22 @@ public class ContainerController : MonoBehaviour
     private void Awake()
     {
         _waitForMove = new WaitForSeconds(_moveInterval);
+        _container.ItemAdded += OnItemAdded;
+    }
+
+    private void OnItemAdded(IGridContainable item, Vector2Int position)
+    {
+        var adjacents = GetAdjacents(position);
+
+        foreach(var adjacentPos in adjacents) { 
+            ItemTile tile = _container.TileMap.GetTile<ItemTile>(adjacentPos);
+
+            if(tile == null)
+                continue;
+
+            tile.ApplyItemEffect(item.Owner);
+        }
+        //throw new NotImplementedException();
     }
 
     private void Start()
@@ -89,7 +137,6 @@ public class ContainerController : MonoBehaviour
             foreach (var property in itemProperties)
             {
                 property.Tick();
-                cellsToRemove.AddRange(property.GetCellsToRemove());
             }
         }
 

@@ -1,3 +1,5 @@
+using Sirenix.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +10,11 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 {
     [SerializeField]
     [Tooltip("A tilemap that determines which slots in this container are valid")]
-    private Tilemap _tilemap;
+    public Tilemap TileMap;
+    [SerializeField]
+    private TileBase _emptyTile;
 
-    private Grid _grid;
+    public Grid TileGrid; //TODO: there's like no reason to cache this, the tilemap can do pretty much everything this can
 
     public Dictionary<Vector2Int, IGridContainable> Cells { get; } = new Dictionary<Vector2Int, IGridContainable>();
     public int CellCapacity { get; private set; }
@@ -27,14 +31,19 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     private GridHighlightModel _outlineUIModel;
 
+    public delegate void GridItemEvent(IGridContainable item, Vector2Int position);
+
+    public event GridItemEvent ItemAdded;
+    public event GridItemEvent ItemRemoved;
+
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-        _tilemap = GetComponentInChildren<Tilemap>();
-        _grid = GetComponentInChildren<Grid>();
+        TileMap = GetComponentInChildren<Tilemap>();
+        TileGrid = GetComponentInChildren<Grid>();
 
         _outlineUIModel = new();
-        _outlineUIModel.grid = _grid;
+        _outlineUIModel.grid = TileGrid;
     }
 
     private void Start()
@@ -42,14 +51,24 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         CountCellCapacity();
     }
 
+    public Vector2Int[] GetCellsOfItem(IGridContainable item)
+    {
+        var occupiedCells = Cells.Keys.Where((pos) =>
+        {
+            return Cells[pos].Equals(item);
+        }).ToArray();
+
+        return occupiedCells;
+    }
+
     private void CountCellCapacity()
     {
-        BoundsInt bounds = _tilemap.cellBounds;
+        BoundsInt bounds = TileMap.cellBounds;
 
         CellCapacity = 0;
         foreach (Vector3Int pos in bounds.allPositionsWithin)
         {
-            if (_tilemap.GetTile(pos))
+            if (TileMap.GetTile(pos))
             {//if the tilemap contains a tile at this position, count it toward the capacity
                 CellCapacity++;
             }
@@ -66,8 +85,8 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public void OnHover(IGridContainable item)
     {
-        var containerAnchor = _grid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
-        var nearestPos = _grid.GetCellCenterWorld(containerAnchor);
+        var containerAnchor = TileGrid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
+        var nearestPos = TileGrid.GetCellCenterWorld(containerAnchor);
 
         List<Vector3Int> containerCells = new List<Vector3Int>();
         foreach(var localCell in item.GetCellRelativePositions())
@@ -90,8 +109,8 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     public bool AddAndSnapToNearest(IGridContainable item)
     {
         //Get nearest cell to anchor
-        var nearestCell = _grid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
-        var nearestPos = _grid.GetCellCenterWorld(nearestCell);
+        var nearestCell = TileGrid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
+        var nearestPos = TileGrid.GetCellCenterWorld(nearestCell);
 
         //Check if item can be inserted at cell position
         if (!TryAddItem(item, (Vector2Int)nearestCell))
@@ -108,7 +127,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public void SnapToCell(IGridContainable item, Vector2Int cell)
     {
-        var targetPosition = _grid.GetCellCenterWorld((Vector3Int)cell);
+        var targetPosition = TileGrid.GetCellCenterWorld((Vector3Int)cell);
 
         //Actually move the item
         item.Owner.transform.position = targetPosition - item.AnchorLocalPosition;
@@ -121,14 +140,14 @@ public class ItemContainer : MonoBehaviour, IGridContainer
             return false;
 
         Vector2Int[] relativePositions = item.GetCellRelativePositions();
-
         foreach(Vector2Int relativePos in relativePositions)
         {
             Cells.Add(relativePos + insertPos, item);
         }
 
         item.Container = this;
-        //SnapToCell(item, insertPos);
+        ItemAdded?.Invoke(item, insertPos);
+        CopyTileMapDatas(item, insertPos);
         return true;
     }
 
@@ -145,10 +164,14 @@ public class ItemContainer : MonoBehaviour, IGridContainer
             return Cells[pos].Equals(item);
         }).ToArray();
 
+        RemoveTileMapDatas(item);
+
         foreach (Vector2Int pos in occupiedCells)
         {
             Cells.Remove(pos);
         }
+
+        ItemRemoved?.Invoke(item, occupiedCells.First());
 
         item.Container = null;
         return true;
@@ -225,7 +248,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public bool IsCellValid(Vector2Int cellPos)
     {
-        return _tilemap.GetTile((Vector3Int)cellPos) != null;
+        return TileMap.GetTile((Vector3Int)cellPos) != null;
     }
 
     public bool IsCellOwnedByItem(IGridContainable item, Vector2Int containerCell)
@@ -238,13 +261,37 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public Vector2Int GetAnchorCell(IGridContainable item)
     {
-        return (Vector2Int)_grid.WorldToCell(item.AnchorWorldPosition);
+        return (Vector2Int)TileGrid.WorldToCell(item.AnchorWorldPosition);
     }
 
     public void OnPick(IGridContainable containable)
     {
         _audioSource.PlayOneShot(sfx_itemRemoved);
         TryRemoveItem(containable);
+    }
+
+    private void CopyTileMapDatas(IGridContainable containable, Vector2Int insertPos)
+    {
+        Item item = containable.Owner.GetComponent<Item>();
+        foreach(var pos in item.GetCellRelativePositions())
+        {
+            var itemTilePos = (Vector3Int)(pos + item.AnchorCell);
+            Vector3Int containerPos = (Vector3Int)(pos + insertPos);
+
+            var tile = item._slotMap.GetTile(itemTilePos);
+            TileMap.SetTile(containerPos, tile);
+        }
+    }
+
+    private void RemoveTileMapDatas(IGridContainable containable)
+    {
+        var containerPositions = GetCellsOfItem(containable);
+
+        foreach(var pos in containerPositions)
+        {
+            TileMap.SetTile((Vector3Int)pos, _emptyTile);
+        }
+
     }
 
     private void OnDestroy()
