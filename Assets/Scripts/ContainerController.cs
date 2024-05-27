@@ -4,9 +4,42 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ContainerController : MonoBehaviour
 {
+    public static Vector3Int[] ADJACENCY_OFFSETS = new Vector3Int[]
+    {
+        Vector3Int.up,
+        Vector3Int.right,
+        Vector3Int.down,
+        Vector3Int.left,
+    };
+
+    public static Vector3Int[] GetAdjacents(Vector3Int center)
+    {
+        List<Vector3Int> result = new List<Vector3Int>();
+
+        foreach(Vector3Int offset in  ADJACENCY_OFFSETS)
+        {
+            result.Add(offset + center);
+        }
+
+        return result.ToArray();
+    }
+
+    public static Vector3Int[] GetAdjacents(Vector2Int center)
+    {
+        List<Vector3Int> result = new List<Vector3Int>();
+
+        foreach(Vector3Int offset in  ADJACENCY_OFFSETS)
+        {
+            result.Add(offset + (Vector3Int)center);
+        }
+
+        return result.ToArray();
+    }
+
     public static Action<ItemContainer> ContainerClosed;
 
     [SerializeField] private ItemContainer _container;
@@ -19,8 +52,9 @@ public class ContainerController : MonoBehaviour
     Vector2Int _moveOffset = new Vector2Int(0, -1);
 
     [SerializeField]
+    [FormerlySerializedAs("_moveInterval")]
     [Min(0f)]
-    float _moveInterval = 1;
+    float _tickInterval = 1;
 
     [Header("SFX")]
     public AudioSource _audio;
@@ -31,12 +65,96 @@ public class ContainerController : MonoBehaviour
 
     private void Awake()
     {
-        _waitForMove = new WaitForSeconds(_moveInterval);
+        _waitForMove = new WaitForSeconds(_tickInterval);
+        _container.ItemAdded += UpdateItemAdjacency;
+        _container.ItemRemoved += OnItemRemoved;
+        _mover.ItemMoved += UpdateItemAdjacency;
+    }
+
+    private void UpdateItemAdjacency(IGridContainable item)
+    {
+        CheckAdjacencyEffects(item);
+
+        var itemAnchor = _container.GetAnchorCell(item);
+        var borderPositions = item.BorderPositions;
+        //Loop through all cells of this item
+        foreach(var borderPos in borderPositions) {
+            var containerPosition = borderPos + itemAnchor;
+
+            if(_container.Cells.TryGetValue(containerPosition, out var adjacentItem))
+            {
+                CheckAdjacencyEffects(adjacentItem);
+            }
+            
+        }
+    }
+
+    private void OnItemRemoved(IGridContainable item)
+    {
+        HashSet<ItemProperty> properties = new HashSet<ItemProperty>(item.Owner.GetComponents<ItemProperty>());
+        foreach (var property in properties)
+        {
+            Destroy(property);
+        }
+
+        var itemAnchor = _container.GetAnchorCell(item);
+
+        var borderPositions = item.BorderPositions;
+        //Loop through all cells of this item
+        foreach(var borderPos in borderPositions) {
+            var containerPosition = borderPos + itemAnchor;
+
+            //Look at adjacent tiles for item effects
+            ItemTile tile = _container.TileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
+
+            if (tile == null)
+                continue;
+
+            if(_container.Cells.TryGetValue(containerPosition, out var adjacentItem))
+            {
+                CheckAdjacencyEffects(adjacentItem);
+            }
+        }
+
+    }
+
+    private void CheckAdjacencyEffects(IGridContainable item)
+    {
+        var itemAnchor = _container.GetAnchorCell(item);
+        HashSet<ItemProperty> properties = new HashSet<ItemProperty>(item.Owner.GetComponents<ItemProperty>());
+
+        foreach(var borderPos in item.BorderPositions)
+        {
+            var containerPosition = borderPos + itemAnchor;
+
+            //Look at adjacent tiles for item effects
+            ItemTile tile = _container.TileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
+
+            if (tile == null)
+                continue;
+
+            if(properties.Any((property) => tile.IsTypeMatch(property.GetType())))
+            {
+                properties.RemoveWhere((itemProp) => tile.IsTypeMatch(itemProp.GetType()));
+                continue;
+            }
+            tile.ApplyItemEffect(item.Owner);
+        }
+
+        if(properties.Count > 0)
+        {
+            foreach(var property in properties)
+            {
+                Destroy(property);
+            }
+        }
+
+
     }
 
     private void Start()
     {
-        InvokeRepeating(nameof(DoMove), 0, _moveInterval);
+        InvokeRepeating(nameof(DoMove), 0, _tickInterval);
     }
 
     [ContextMenu("Destroy Container")]
@@ -89,7 +207,6 @@ public class ContainerController : MonoBehaviour
             foreach (var property in itemProperties)
             {
                 property.Tick();
-                cellsToRemove.AddRange(property.GetCellsToRemove());
             }
         }
 
@@ -98,5 +215,6 @@ public class ContainerController : MonoBehaviour
             _container.Cells.Remove(cell);
         }
         _mover.DoMoves();
+
     }
 }

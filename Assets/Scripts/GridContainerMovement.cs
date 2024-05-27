@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GridContainerMovement : MonoBehaviour
 {
+    public event Action<IGridContainable> ItemMoved;
     public ItemContainer Container;
 
     private Dictionary<IGridContainable, Vector2Int> _desiredMovements = new Dictionary<IGridContainable, Vector2Int>();
@@ -34,7 +36,10 @@ public class GridContainerMovement : MonoBehaviour
             var moved = Container.TryAddItem(currItem.Value, anchor + _desiredMovements[currItem.Value]);
 
             if (moved)
+            {
                 Container.SnapToCell(currItem.Value, anchor + _desiredMovements[currItem.Value]);
+                ItemMoved?.Invoke(currItem.Value);
+            }
             else
                 Container.TryAddItem(currItem.Value, anchor);
 

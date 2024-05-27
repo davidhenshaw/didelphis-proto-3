@@ -355,7 +355,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 136a14fb51572cb48a8a9925586ab0c3, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -432,7 +432,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bef51d0134c9f640a3212ae9d3158ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tilemap: {fileID: 5492633598308260176}
+  TileMap: {fileID: 5492633598308260176}
+  _emptyTile: {fileID: 11400000, guid: ff02ec5769886cf4984e89ec2e296c75, type: 2}
+  TileGrid: {fileID: 0}
   _view: {fileID: 1367653788296325836}
   _audioSource: {fileID: 8813498745507652301}
   sfx_itemRejected: {fileID: 8300000, guid: 611863eceae73594ebcfcd794d5473ff, type: 3}
@@ -638,7 +640,7 @@ GameObject:
   - component: {fileID: 1148228344475422016}
   - component: {fileID: 6694439788391576120}
   m_Layer: 0
-  m_Name: Preview Map
+  m_Name: Effects Tiles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -735,9 +737,9 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1413597519
+  m_SortingLayer: 1
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
