@@ -70,23 +70,45 @@ public class ContainerController : MonoBehaviour
     private void OnItemAdded(IGridContainable item, Vector2Int position)
     {
         var containerPositions = _container.GetCellsOfItem(item);
+        var itemAnchor = _container.GetAnchorCell(item);
 
+        var borderPositions = item.BorderPositions;
         //Loop through all cells of this item
-        foreach(var containerPos in containerPositions) {
-            var adjacents = GetAdjacents(position);
+        foreach(var borderPos in borderPositions) {
+            var containerPosition = borderPos + itemAnchor;
 
             //Look at adjacent tiles for item effects
-            foreach ( var adjacent in adjacents) {
-                if (containerPositions.Contains((Vector2Int)adjacent))
-                    continue;
+            ItemTile tile = _container.TileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
 
-                ItemTile tile = _container.TileMap.GetTile<ItemTile>(adjacent);
+            if (tile == null)
+                continue;
 
-                if (tile == null)
-                    continue;
+            tile.ApplyItemEffect(item.Owner);
 
-                tile.ApplyItemEffect(item.Owner);
+            if(_container.Cells.TryGetValue(containerPosition, out var adjacentItem))
+            {
+                CheckAdjacencyEffects(adjacentItem);
             }
+            
+        }
+    }
+
+    private void CheckAdjacencyEffects(IGridContainable item)
+    {
+        var containerPositions = _container.GetCellsOfItem(item);
+        var itemAnchor = _container.GetAnchorCell(item);
+
+        foreach(var borderPos in item.BorderPositions)
+        {
+            var containerPosition = borderPos + itemAnchor;
+
+            //Look at adjacent tiles for item effects
+            ItemTile tile = _container.TileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
+
+            if (tile == null)
+                continue;
+
+            tile.ApplyItemEffect(item.Owner);
         }
     }
 
