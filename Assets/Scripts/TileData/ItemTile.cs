@@ -7,13 +7,20 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(menuName = "2D/Tiles/ItemTile")]
 public class ItemTile : Tile
 {
-    public static readonly Dictionary<TileAttributes, Type> ATTRIBUTE_MAP = new Dictionary<TileAttributes, Type>() 
+    public static readonly Dictionary<TileAttributes, Type> ATTRIBUTE_MAP = new Dictionary<TileAttributes, Type>()
     {
         {TileAttributes.Frozen, typeof(FrozenItemEffect) }
     };
 
     [SerializeField]
     private TileAttributes m_Attribute;
+    public TileAttributes Attributes { get { return m_Attribute; } }
+    public Type ItemEffectType { get {
+            if (m_Attribute == TileAttributes.None)
+                return null;
+            else
+                return ATTRIBUTE_MAP[m_Attribute];
+        } }
 
     public TileAttributes Attribute { get => m_Attribute; private set => m_Attribute = value; }
     
@@ -25,6 +32,11 @@ public class ItemTile : Tile
             return;
 
         target.AddComponent(ATTRIBUTE_MAP[m_Attribute]);
+    }
+
+    public bool IsTypeMatch<T>(T tileEffectType) where T : Type
+    {
+        return ATTRIBUTE_MAP[m_Attribute].Equals(tileEffectType);
     }
 }
 

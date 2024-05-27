@@ -98,19 +98,19 @@ PrefabInstance:
       objectReference: {fileID: 1700589879, guid: ba96e76f914cff041a1bb60df6e8748e, type: 3}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[0].m_Data.a
-      value: 4.761833
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[0].m_Data.b
-      value: 4.761833
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[0].m_Data.g
-      value: 4.761833
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[0].m_Data.r
-      value: 4.761833
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[1].m_Data.a
@@ -141,6 +141,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+      propertyPath: m_Tiles.Array.data[3].second.m_TileIndex
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileAssetArray.Array.data[0].m_RefCount
       value: 3
       objectReference: {fileID: 0}
@@ -154,15 +158,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileAssetArray.Array.data[3].m_RefCount
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[0].m_RefCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileColorArray.Array.data[1].m_RefCount
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileMatrixArray.Array.data[0].m_RefCount
@@ -182,7 +186,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_TileSpriteArray.Array.data[3].m_RefCount
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_Tiles.Array.data[0].second.m_AllTileFlags
@@ -214,7 +218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_Tiles.Array.data[3].second.m_TileColorIndex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_Tiles.Array.data[0].second.m_TileSpriteIndex
@@ -226,6 +230,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
       propertyPath: m_Tiles.Array.data[2].second.m_TileSpriteIndex
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 426032388421738660, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}
+      propertyPath: m_Tiles.Array.data[3].second.m_TileSpriteIndex
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1562855330691474470, guid: 79126b5d8d2b5ec4693ec83ceeb55e69, type: 3}

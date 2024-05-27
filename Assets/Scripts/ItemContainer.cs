@@ -31,7 +31,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     private GridHighlightModel _outlineUIModel;
 
-    public delegate void GridItemEvent(IGridContainable item, Vector2Int position);
+    public delegate void GridItemEvent(IGridContainable item);
 
     public event GridItemEvent ItemAdded;
     public event GridItemEvent ItemRemoved;
@@ -103,7 +103,11 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     {
         OnHoverEnd();
         if(AddAndSnapToNearest(draggable))
+        {
+            var anchorPos = GetAnchorCell(draggable);
+            ItemAdded?.Invoke(draggable);
             _audioSource.PlayOneShot(sfx_itemAdded);
+        }
     }
 
     public bool AddAndSnapToNearest(IGridContainable item)
@@ -146,7 +150,6 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         }
 
         item.Container = this;
-        ItemAdded?.Invoke(item, insertPos);
         CopyTileMapDatas(item, insertPos);
         return true;
     }
@@ -171,7 +174,6 @@ public class ItemContainer : MonoBehaviour, IGridContainer
             Cells.Remove(pos);
         }
 
-        ItemRemoved?.Invoke(item, occupiedCells.First());
 
         item.Container = null;
         return true;
@@ -267,7 +269,10 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     public void OnPick(IGridContainable containable)
     {
         _audioSource.PlayOneShot(sfx_itemRemoved);
-        TryRemoveItem(containable);
+        if(TryRemoveItem(containable))
+        {
+            ItemRemoved?.Invoke(containable);
+        }
     }
 
     private void CopyTileMapDatas(IGridContainable containable, Vector2Int insertPos)
