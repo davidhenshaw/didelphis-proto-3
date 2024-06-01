@@ -5,32 +5,54 @@ using UnityEngine;
 
 public class GameSession : MonoBehaviour
 {
-    public int Score => _scoreModel.Score;
-    private ScorePanelModel _scoreModel;
+    public int Score => _rulePanelModel.Score;
+    private RulePanelModel _rulePanelModel;
 
-    public static Action<ScorePanelModel> ScoreChanged;
+    public static Action<RulePanelModel> ScoreChanged;
 
-    public List<ScoreRule<ItemContainer>> scoreRules;
+    public List<ScoreRule<ItemContainer>> Rules;
 
     private void Awake()
     {
-        _scoreModel = new ScorePanelModel();
     }
     private void Start()
     {
         ContainerController.ContainerClosed += TallyScore;
+        ContainerController.ContainerItemsUpdated += OnContainerUpdated;
     }
-    public void TallyScore(ItemContainer container)
+
+    public void OnContainerUpdated(ItemContainer container)
     {
-        foreach (var rule in scoreRules)
+        StartCoroutine(nameof(NotifyScoreChange), container);
+    }
+
+    private IEnumerator NotifyScoreChange(ItemContainer container)
+    {
+        foreach (var rule in Rules)
         {
-            int value = rule.GetScore(container);
-            _scoreModel.Score += value;
+            float value = rule.GetProgress(container);
 
             Debug.Log($"{rule.name} returned {value}");
         }
 
-        ScoreChanged?.Invoke(_scoreModel);
+        _rulePanelModel.Container = container;
+
+        yield return null; //Wait a frame for components to be added/destoryed
+
+        ScoreChanged?.Invoke(_rulePanelModel);
+        Debug.Log("Score: " + Score);
+    }
+
+    public void TallyScore(ItemContainer container)
+    {
+        foreach (var rule in Rules)
+        {
+            float value = rule.GetProgress(container);
+
+            Debug.Log($"{rule.name} returned {value}");
+        }
+
+        ScoreChanged?.Invoke(_rulePanelModel);
         Debug.Log("Score: " + Score);
     }
 }

@@ -15,6 +15,11 @@ public class GridCapacityRule : ScoreRule<ItemContainer>
     [Range(-100, 0)]
     private int _emptySpacePenalty = -10;
 
+    public override float GetProgress(ItemContainer obj)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override int GetScore(ItemContainer obj)
     {
         var emptySpaces = obj.CellCapacity - obj.Cells.Count;

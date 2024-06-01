@@ -41,6 +41,7 @@ public class ContainerController : MonoBehaviour
     }
 
     public static Action<ItemContainer> ContainerClosed;
+    public static Action<ItemContainer> ContainerItemsUpdated;
 
     [SerializeField] private ItemContainer _container;
     [SerializeField] private GameObject _containerPrefab;
@@ -85,8 +86,9 @@ public class ContainerController : MonoBehaviour
             {
                 CheckAdjacencyEffects(adjacentItem);
             }
-            
         }
+
+        ContainerItemsUpdated?.Invoke(_container);
     }
 
     private void OnItemRemoved(IGridContainable item)
@@ -116,6 +118,7 @@ public class ContainerController : MonoBehaviour
             }
         }
 
+        ContainerItemsUpdated?.Invoke(_container);
     }
 
     private void CheckAdjacencyEffects(IGridContainable item)
