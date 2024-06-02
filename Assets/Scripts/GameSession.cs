@@ -9,11 +9,15 @@ public class GameSession : MonoBehaviour
     private RulePanelModel _rulePanelModel;
 
     public static Action<RulePanelModel> ScoreChanged;
+    public static Action<GameSession> GameSessionChanged;
 
-    public List<ScoreRule<ItemContainer>> Rules;
+    [SerializeField]
+    private List<ScoreRule<ItemContainer>> _rules;
+    public List<ScoreRule<ItemContainer>> Rules => _rules;
 
     private void Awake()
     {
+        GameSessionChanged?.Invoke(this);
     }
     private void Start()
     {
@@ -28,7 +32,7 @@ public class GameSession : MonoBehaviour
 
     private IEnumerator NotifyScoreChange(ItemContainer container)
     {
-        foreach (var rule in Rules)
+        foreach (var rule in _rules)
         {
             float value = rule.GetProgress(container);
 
@@ -45,7 +49,7 @@ public class GameSession : MonoBehaviour
 
     public void TallyScore(ItemContainer container)
     {
-        foreach (var rule in Rules)
+        foreach (var rule in _rules)
         {
             float value = rule.GetProgress(container);
 

@@ -860,10 +860,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gameplay UI Overlay
       objectReference: {fileID: 0}
-    - target: {fileID: 3584209216383035744, guid: ba2ab87c637013e499712f5a2a8eccc6, type: 3}
-      propertyPath: _rules.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: 3c07c26694b0cbc47b3897be927fb49a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

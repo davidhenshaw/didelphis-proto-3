@@ -7,25 +7,27 @@ public class RulePanelView : MonoBehaviour
 {
     [SerializeField]
     GameObject widgetPrefab;
-
-    [SerializeField]
     ScoreRule<ItemContainer>[] _rules;
 
     private List<RuleWidgetView> _widgets = new();
     private void Awake()
     {
+        GameSession.GameSessionChanged += OnGameSessionInit;
         GameSession.ScoreChanged += UpdateView;
     }
 
-    private void Start()
+    void OnGameSessionInit(GameSession gameSession)
     {
-        //Compare incoming score rules with existing ones
+        _rules = gameSession.Rules.ToArray();        
+        _widgets.Clear();
+        
         foreach(var rule in _rules) {
             var instance = Instantiate(widgetPrefab, transform).GetComponent<RuleWidgetView>();
             instance.Rule = rule;
 
             _widgets.Add(instance); 
         }
+
     }
 
     public void UpdateView(RulePanelModel model)
@@ -46,6 +48,5 @@ public struct RulePanelModel
     public int Score;
     public float Progress;
     public ItemContainer Container;
-    public ScoreRule<ItemContainer>[] Rules;
 }
 
