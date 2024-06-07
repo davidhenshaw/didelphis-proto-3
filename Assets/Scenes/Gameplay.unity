@@ -580,6 +580,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2717137011931225808, guid: da836d8bd921d064084c1812e9531f71, type: 3}
+      propertyPath: _criteria.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2717137011931225808, guid: da836d8bd921d064084c1812e9531f71, type: 3}
+      propertyPath: _criteria.Array.data[0].Rule
+      value: 
+      objectReference: {fileID: 11400000, guid: 3c07c26694b0cbc47b3897be927fb49a, type: 2}
+    - target: {fileID: 2717137011931225808, guid: da836d8bd921d064084c1812e9531f71, type: 3}
+      propertyPath: _criteria.Array.data[0].number
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2938727739759217006, guid: da836d8bd921d064084c1812e9531f71, type: 3}
       propertyPath: m_Name
       value: Services

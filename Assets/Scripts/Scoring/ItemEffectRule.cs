@@ -9,9 +9,7 @@ public class ItemEffectRule : ScoreRule<ItemContainer>
     [SerializeField]
     TileAttributes TileAttribute;
 
-    [SerializeField]
-    int numEffects = 0;
-    public override float GetProgress(ItemContainer obj)
+    public override float GetProgress(ItemContainer obj, int numEffects, bool invert = false)
     {
         int effectCount = 0;
         if(ItemTile.ATTRIBUTE_MAP.TryGetValue(TileAttribute, out Type effectType))

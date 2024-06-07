@@ -3,39 +3,40 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class RulePanelView : MonoBehaviour
+public class RulePanel : MonoBehaviour
 {
     [SerializeField]
     GameObject widgetPrefab;
-    ScoreRule<ItemContainer>[] _rules;
+    Criteria[] _criteria;
 
     private List<RuleWidgetView> _widgets = new();
     private void Awake()
     {
         GameSession.GameSessionChanged += OnGameSessionInit;
-        GameSession.ScoreChanged += UpdateView;
+        GameSession.ScoreChanged += UpdateViews;
     }
 
     void OnGameSessionInit(GameSession gameSession)
     {
-        _rules = gameSession.Rules.ToArray();        
+        _criteria = gameSession.CurrentCriteria;
         _widgets.Clear();
         
-        foreach(var rule in _rules) {
+        foreach(var criterion in _criteria) {
             var instance = Instantiate(widgetPrefab, transform).GetComponent<RuleWidgetView>();
-            instance.Rule = rule;
+            instance.Rule = criterion.Rule;
 
             _widgets.Add(instance); 
         }
 
     }
 
-    public void UpdateView(RulePanelModel model)
+    public void UpdateViews(RulePanelModel model)
     {
         RuleWidgetModel widgetModel = new RuleWidgetModel();
-        foreach(var widget in _widgets)
+        for(int i = 0; i < model.Criteria.Length; i++)
         {
-            widgetModel.Progress = widget.Rule.GetProgress(model.Container);
+            var widget = _widgets.ToArray()[i];
+            widgetModel.Progress = model.Progress[i];
 
             widget.UpdateView(widgetModel);
         }
@@ -46,7 +47,8 @@ public class RulePanelView : MonoBehaviour
 public struct RulePanelModel
 {
     public int Score;
-    public float Progress;
+    public float[] Progress;
     public ItemContainer Container;
+    public Criteria[] Criteria;
 }
 

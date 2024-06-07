@@ -12,8 +12,8 @@ public class GameSession : MonoBehaviour
     public static Action<GameSession> GameSessionChanged;
 
     [SerializeField]
-    private List<ScoreRule<ItemContainer>> _rules;
-    public List<ScoreRule<ItemContainer>> Rules => _rules;
+    private Criteria[] _criteria;
+    public Criteria[] CurrentCriteria => _criteria;
 
     private void Awake()
     {
@@ -21,7 +21,6 @@ public class GameSession : MonoBehaviour
     }
     private void Start()
     {
-        ContainerController.ContainerClosed += TallyScore;
         ContainerController.ContainerItemsUpdated += OnContainerUpdated;
     }
 
@@ -32,31 +31,29 @@ public class GameSession : MonoBehaviour
 
     private IEnumerator NotifyScoreChange(ItemContainer container)
     {
-        foreach (var rule in _rules)
+        float[] progressAmounts = new float[_criteria.Length];
+        for (int i = 0; i < _criteria.Length; i++)
         {
-            float value = rule.GetProgress(container);
-
-            Debug.Log($"{rule.name} returned {value}");
+            var criterion = _criteria[i];
+            progressAmounts[i] = criterion.Rule.GetProgress(container, criterion.number, criterion.invert);
         }
 
         _rulePanelModel.Container = container;
+        _rulePanelModel.Progress = progressAmounts;
+        _rulePanelModel.Criteria = CurrentCriteria;
 
         yield return null; //Wait a frame for components to be added/destoryed
 
         ScoreChanged?.Invoke(_rulePanelModel);
-        Debug.Log("Score: " + Score);
+        //Debug.Log("Score: " + Score);
     }
+}
 
-    public void TallyScore(ItemContainer container)
-    {
-        foreach (var rule in _rules)
-        {
-            float value = rule.GetProgress(container);
-
-            Debug.Log($"{rule.name} returned {value}");
-        }
-
-        ScoreChanged?.Invoke(_rulePanelModel);
-        Debug.Log("Score: " + Score);
-    }
+[System.Serializable]
+public class Criteria
+{
+    public ScoreRule<ItemContainer> Rule;
+    public bool invert;
+    public int number;
+    public int id;
 }

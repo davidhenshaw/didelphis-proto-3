@@ -15,7 +15,7 @@ public class GridCapacityRule : ScoreRule<ItemContainer>
     [Range(-100, 0)]
     private int _emptySpacePenalty = -10;
 
-    public override float GetProgress(ItemContainer obj)
+    public override float GetProgress(ItemContainer obj, int num, bool invert = false)
     {
         throw new System.NotImplementedException();
     }
