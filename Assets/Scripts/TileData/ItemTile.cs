@@ -36,6 +36,7 @@ public class ItemTile : Tile
 
     public bool IsTypeMatch<T>(T tileEffectType) where T : Type
     {
+        if (m_Attribute == TileAttributes.None) return false;
         return ATTRIBUTE_MAP[m_Attribute].Equals(tileEffectType);
     }
 }
