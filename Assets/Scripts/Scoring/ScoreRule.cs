@@ -11,5 +11,5 @@ public abstract class ScoreRule<T> : ScriptableObject
     /// </summary>
     /// <param name="obj"></param>
     /// <returns>Float between 0 and 1 representing the progress toward this rule's completion</returns>
-    public abstract float GetProgress(T obj, int num, bool invert = false );
+    public abstract float GetProgress(T obj, int goalCount, bool invert = false );
 }
