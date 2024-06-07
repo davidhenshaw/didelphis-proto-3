@@ -19,10 +19,10 @@ public class GameSession : MonoBehaviour
 
     private void Awake()
     {
-        GameSessionChanged?.Invoke(this);
     }
     private void Start()
     {
+        GameSessionChanged?.Invoke(this);
         ContainerController.ContainerItemsUpdated += OnContainerUpdated;
     }
 
