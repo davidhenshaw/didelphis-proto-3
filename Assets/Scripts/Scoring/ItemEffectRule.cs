@@ -1,3 +1,4 @@
+using Sirenix.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,21 +10,30 @@ public class ItemEffectRule : ScoreRule<ItemContainer>
     [SerializeField]
     TileAttributes TileAttribute;
 
-    public override float GetProgress(ItemContainer obj, int numEffects, bool invert = false)
+    public override float GetProgress(ItemContainer obj, int goal, bool invert = false)
     {
         int effectCount = 0;
+
+        HashSet<IGridContainable> containerItems = new HashSet<IGridContainable>();
+        containerItems.AddRange(obj.Cells.Values); //Eliminates duplicates
+
         if(ItemTile.ATTRIBUTE_MAP.TryGetValue(TileAttribute, out Type effectType))
         {
             //Search the item container for items with this effect
             // and count them
-            foreach(var item in obj.Cells.Values)
+            foreach(var item in containerItems)
             {
                 if(item.Owner.TryGetComponent(effectType, out Component component))
                     effectCount++;
             }
         }
 
-        return (float)effectCount/ numEffects;
+        if (invert)
+        {
+            effectCount = containerItems.Count - effectCount;
+        }
+
+        return (float)effectCount/ goal;
     }
 
     public override int GetScore(ItemContainer obj)
