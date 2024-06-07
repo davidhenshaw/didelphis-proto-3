@@ -298,15 +298,6 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         }
 
     }
-
-    private void OnDestroy()
-    {
-        var toDestroy = Cells.Values.Select((item) => { return item.Owner; });
-        foreach(GameObject obj in toDestroy)
-        {
-            Destroy(obj);
-        }
-    }
 }
 
 public struct MovementResult
