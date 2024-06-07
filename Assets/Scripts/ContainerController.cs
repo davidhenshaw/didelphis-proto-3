@@ -88,7 +88,7 @@ public class ContainerController : MonoBehaviour
             }
         }
 
-        ContainerItemsUpdated?.Invoke(_container);
+        StartCoroutine(WaitThenEvokeUpdate(_container));
     }
 
     private void OnItemRemoved(IGridContainable item)
@@ -107,7 +107,7 @@ public class ContainerController : MonoBehaviour
             var containerPosition = borderPos + itemAnchor;
 
             //Look at adjacent tiles for item effects
-            ItemTile tile = _container.TileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
+            ItemTile tile = _container.ItemTileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
 
             if (tile == null)
                 continue;
@@ -118,7 +118,7 @@ public class ContainerController : MonoBehaviour
             }
         }
 
-        ContainerItemsUpdated?.Invoke(_container);
+        StartCoroutine(WaitThenEvokeUpdate(_container));
     }
 
     private void CheckAdjacencyEffects(IGridContainable item)
@@ -131,7 +131,7 @@ public class ContainerController : MonoBehaviour
             var containerPosition = borderPos + itemAnchor;
 
             //Look at adjacent tiles for item effects
-            ItemTile tile = _container.TileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
+            ItemTile tile = _container.ItemTileMap.GetTile<ItemTile>((Vector3Int)containerPosition);
 
             if (tile == null)
                 continue;
@@ -153,6 +153,12 @@ public class ContainerController : MonoBehaviour
         }
 
 
+    }
+
+    private IEnumerator WaitThenEvokeUpdate(ItemContainer container)
+    {
+        yield return null;
+        ContainerItemsUpdated?.Invoke(container);
     }
 
     private void Start()

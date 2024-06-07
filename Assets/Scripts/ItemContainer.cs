@@ -11,10 +11,12 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     [SerializeField]
     [Tooltip("A tilemap that determines which slots in this container are valid")]
     public Tilemap TileMap;
+
+    [SerializeField]
+    [Tooltip("A tilemap which keeps track of item tile types")]
+    public Tilemap ItemTileMap;
     [SerializeField]
     private TileBase _emptyTile;
-
-    public Grid TileGrid; //TODO: there's like no reason to cache this, the tilemap can do pretty much everything this can
 
     public Dictionary<Vector2Int, IGridContainable> Cells { get; } = new Dictionary<Vector2Int, IGridContainable>();
     public int CellCapacity { get; private set; }
@@ -39,11 +41,9 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-        TileMap = GetComponentInChildren<Tilemap>();
-        TileGrid = GetComponentInChildren<Grid>();
 
         _outlineUIModel = new();
-        _outlineUIModel.grid = TileGrid;
+        _outlineUIModel.grid = TileMap.layoutGrid;
     }
 
     private void Start()
@@ -85,8 +85,8 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public void OnHover(IGridContainable item)
     {
-        var containerAnchor = TileGrid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
-        var nearestPos = TileGrid.GetCellCenterWorld(containerAnchor);
+        var containerAnchor = TileMap.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
+        var nearestPos = TileMap.GetCellCenterWorld(containerAnchor);
 
         List<Vector3Int> containerCells = new List<Vector3Int>();
         foreach(var localCell in item.GetCellRelativePositions())
@@ -113,8 +113,8 @@ public class ItemContainer : MonoBehaviour, IGridContainer
     public bool AddAndSnapToNearest(IGridContainable item)
     {
         //Get nearest cell to anchor
-        var nearestCell = TileGrid.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
-        var nearestPos = TileGrid.GetCellCenterWorld(nearestCell);
+        var nearestCell = TileMap.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
+        var nearestPos = TileMap.GetCellCenterWorld(nearestCell);
 
         //Check if item can be inserted at cell position
         if (!TryAddItem(item, (Vector2Int)nearestCell))
@@ -131,7 +131,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public void SnapToCell(IGridContainable item, Vector2Int cell)
     {
-        var targetPosition = TileGrid.GetCellCenterWorld((Vector3Int)cell);
+        var targetPosition = TileMap.GetCellCenterWorld((Vector3Int)cell);
 
         //Actually move the item
         item.Owner.transform.position = targetPosition - item.AnchorLocalPosition;
@@ -263,7 +263,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public Vector2Int GetAnchorCell(IGridContainable item)
     {
-        return (Vector2Int)TileGrid.WorldToCell(item.AnchorWorldPosition);
+        return (Vector2Int)TileMap.WorldToCell(item.AnchorWorldPosition);
     }
 
     public void OnPick(IGridContainable containable)
@@ -284,7 +284,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
             Vector3Int containerPos = (Vector3Int)(pos + insertPos);
 
             var tile = item._slotMap.GetTile(itemTilePos);
-            TileMap.SetTile(containerPos, tile);
+            ItemTileMap.SetTile(containerPos, tile);
         }
     }
 
@@ -294,7 +294,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
         foreach(var pos in containerPositions)
         {
-            TileMap.SetTile((Vector3Int)pos, _emptyTile);
+            ItemTileMap.SetTile((Vector3Int)pos, null);
         }
 
     }
