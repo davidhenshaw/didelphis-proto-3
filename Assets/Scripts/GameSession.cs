@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameSession : MonoBehaviour
@@ -8,8 +9,9 @@ public class GameSession : MonoBehaviour
     public int Score => _rulePanelModel.Score;
     private RulePanelModel _rulePanelModel;
 
-    public static Action<RulePanelModel> ScoreChanged;
-    public static Action<GameSession> GameSessionChanged;
+    public static event Action<RulePanelModel> ScoreChanged;
+    public static event Action<GameSession> GameSessionChanged;
+    public static event Action CriteriaMet;
 
     [SerializeField]
     private Criteria[] _criteria;
@@ -46,6 +48,12 @@ public class GameSession : MonoBehaviour
 
         ScoreChanged?.Invoke(_rulePanelModel);
         //Debug.Log("Score: " + Score);
+        bool allCriteriaMet = progressAmounts.All((prog) => prog >= 1);
+        if(allCriteriaMet)
+        {
+            CriteriaMet?.Invoke();
+            Debug.Log("Puzzle Completed");
+        }
     }
 }
 
@@ -55,5 +63,4 @@ public class Criteria
     public ScoreRule<ItemContainer> Rule;
     public bool invert;
     public int number;
-    public int id;
 }
