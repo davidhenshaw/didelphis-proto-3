@@ -250,7 +250,14 @@ public class ItemContainer : MonoBehaviour, IGridContainer
 
     public bool IsCellValid(Vector2Int cellPos)
     {
-        return TileMap.GetTile((Vector3Int)cellPos) != null;
+        var tile = TileMap.GetTile<ContainerTile>((Vector3Int)cellPos); 
+
+        if(tile)
+        {
+            return tile.accessType == ContainerTile.AccessType.Allowed;
+        }
+        else
+            return false;
     }
 
     public bool IsCellOwnedByItem(IGridContainable item, Vector2Int containerCell)
