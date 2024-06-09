@@ -240,7 +240,7 @@ MonoBehaviour:
   _containerPrefab: {fileID: 4503613409419180865, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
   _mover: {fileID: 6918747257588214473}
   _moveOffset: {x: 0, y: -1}
-  _moveInterval: 0.8
+  _tickInterval: 0.8
   _audio: {fileID: 4474005579448203271}
   sfx_bagDone: {fileID: 8300000, guid: 9ce7a7ba9894c4546ab75c174e55b396, type: 3}
   sfx_bagSpawn: {fileID: 8300000, guid: 29318b36fd681cc478b74daa464c8137, type: 3}
@@ -401,6 +401,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3841412117284641357, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3918234920751450948, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
       propertyPath: m_Positions.Array.data[1].x
       value: 1
@@ -420,6 +424,10 @@ PrefabInstance:
     - target: {fileID: 4503613409419180865, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
       propertyPath: m_Name
       value: Cell Container
+      objectReference: {fileID: 0}
+    - target: {fileID: 5779519432277387365, guid: 827029b33ad38254ba504d6f913435f1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
