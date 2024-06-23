@@ -5,6 +5,8 @@ using UnityEngine;
 //[RequireComponent(typeof(Collider2D))]
 public class SimpleDraggable : MonoBehaviour, IDraggable
 {
+    public static int MAX_COLLIDER_DEPTH = 15;
+
     public delegate void DragEvent(Transform target);
 
     private Transform _followTarget;

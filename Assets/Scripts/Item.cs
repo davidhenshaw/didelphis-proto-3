@@ -115,16 +115,18 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         _tempContainer?.OnHoverEnd();
 
         //Find a container that overlaps this item
-        var containers = new Collider2D[1];
-        if(Collider.OverlapCollider(_contactFilter, containers) > 0)
+        var containers = new Collider2D[MAX_COLLIDER_DEPTH];
+        var numOverlaps = Collider.OverlapCollider(_contactFilter, containers);
+
+        //loop through and pick the first container you find
+        for (int i = 0; i < numOverlaps; i++)
         {
-            if (containers[0].TryGetComponent(out IGridContainer container))
+            if (containers[i].TryGetComponent(out IGridContainer container))
             {
                 container.OnDrop(this);
+                break;
             }
         }
-        else
-            Debug.Log("No container found");
     }
 
     public override void OnDragStart(Transform target)
@@ -142,23 +144,29 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         base.OnDrag();
 
         //Find a container that overlaps this item
-        var containers = new Collider2D[1];
-        if(Collider.OverlapCollider(_contactFilter, containers) > 0)
+        var containers = new Collider2D[MAX_COLLIDER_DEPTH];
+        var numOverlap = Collider.OverlapCollider(_contactFilter, containers);
+        if(numOverlap > 0)
         {
-            if (containers[0].TryGetComponent(out IGridContainer newContainer))
+            for (int i = 0; i < numOverlap; i++)
             {
-                if (_tempContainer == null)
-                    _tempContainer = newContainer;
+                if (containers[i].TryGetComponent(out IGridContainer newContainer))
+                {
+                    if (_tempContainer == null)
+                        _tempContainer = newContainer;
 
-                if(newContainer.Equals(_tempContainer))
-                {
-                    _tempContainer.OnHover(this);
-                }
-                else
-                {
-                    _tempContainer.OnHoverEnd();
-                    _tempContainer = newContainer;
-                    _tempContainer.OnHover(this);
+                    if (newContainer.Equals(_tempContainer))
+                    {
+                        _tempContainer.OnHover(this);
+                    }
+                    else
+                    {
+                        _tempContainer.OnHoverEnd();
+                        _tempContainer = newContainer;
+                        _tempContainer.OnHover(this);
+                    }
+
+                    break;
                 }
             }
         }
