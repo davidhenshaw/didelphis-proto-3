@@ -164,6 +164,8 @@ public class ContainerController : MonoBehaviour
     private void Start()
     {
         InvokeRepeating(nameof(DoMove), 0, _tickInterval);
+
+        ContainerItemsUpdated?.Invoke(_container);
     }
 
     [ContextMenu("Destroy Container")]

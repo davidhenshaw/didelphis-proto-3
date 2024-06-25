@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class ScoreRule<T> : ScriptableObject
 {
+    public string RuleName;
+    public string RuleDescription;
+
     public abstract int GetScore(T obj);
 
     /// <summary>

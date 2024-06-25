@@ -37,6 +37,10 @@ public class RulePanel : MonoBehaviour
         {
             var widget = _widgets.ToArray()[i];
             widgetModel.Progress = model.Progress[i];
+            widgetModel.RuleName = model.Criteria[i].Rule.RuleName;
+            var description = model.Criteria[i].Rule.RuleDescription;
+            var number = model.Criteria[i].number > 0 ? $": {model.Criteria[i].number.ToString()}" : "";
+            widgetModel.RuleDescription = description + number;
 
             widget.UpdateView(widgetModel);
         }
