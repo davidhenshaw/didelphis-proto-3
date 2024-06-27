@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69e445dc38582394f8a84ab01fbff05d, type: 3}
   m_Name: Frozen Item Rule
   m_EditorClassIdentifier: 
+  RuleName: 
+  RuleDescription: Must have the FROZEN status
   TileAttribute: 1
-  numEffects: 1

@@ -21,6 +21,11 @@ public class GameSession : MonoBehaviour
     {
         ContainerController.ContainerItemsUpdated += OnContainerUpdated;
     }
+
+    private void OnDestroy()
+    {
+        ContainerController.ContainerItemsUpdated -= OnContainerUpdated;
+    }
     private void Start()
     {
         GameSessionChanged?.Invoke(this);

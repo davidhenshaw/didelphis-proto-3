@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9ee08db24378fb4d91cef3d693a624b, type: 3}
   m_Name: Criteria Tiles Rule
   m_EditorClassIdentifier: 
+  RuleName: 
+  RuleDescription: Items must cover all keys

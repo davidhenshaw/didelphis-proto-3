@@ -4511,6 +4511,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: fantasy-tileset_circle
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 80
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a268e6dd280ccd4449e230d3c71432c0
+      internalID: -770168488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -4719,6 +4740,7 @@ TextureImporter:
       fantasy-tileset_brick: -2029499461
       fantasy-tileset_brick_2: -259924852
       fantasy-tileset_brick_cracked: 1704291777
+      fantasy-tileset_circle: -770168488
       fantasy-tileset_cracked_tile: -896179426
       fantasy-tileset_dark_raised_tile: -1719220157
       fantasy-tileset_dark_tile: -1120270924

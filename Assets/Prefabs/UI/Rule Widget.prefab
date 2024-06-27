@@ -498,7 +498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b979775b01965264abaabf525f8e0aae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  completeSprite: {fileID: -1092368425, guid: ba96e76f914cff041a1bb60df6e8748e, type: 3}
+  completeSprite: {fileID: -770168488, guid: ba96e76f914cff041a1bb60df6e8748e, type: 3}
   incompleteSprite: {fileID: 1623833915, guid: ba96e76f914cff041a1bb60df6e8748e, type: 3}
   labelText: {fileID: 4445044981682451609}
   description: {fileID: 1989198752824953148}
