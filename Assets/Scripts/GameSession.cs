@@ -17,11 +17,17 @@ public class GameSession : MonoBehaviour
 
     public UnityEvent OnPuzzleDone;
 
+    [SerializeField] private float completionDelay = 1f;
+    private float _criteriaMetTime = 0;
+
     [SerializeField]
     private Criteria[] _criteria;
     public Criteria[] CurrentCriteria => _criteria;
 
+    [SerializeField]
+    private AudioClip sfx_victory;
 
+    private HashSet<ItemContainer> _containers = new();
     private void Awake()
     {
         ContainerController.ContainerItemsUpdated += OnContainerUpdated;
@@ -41,10 +47,54 @@ public class GameSession : MonoBehaviour
         StartCoroutine(nameof(NotifyScoreChange), container);
     }
 
+    IEnumerator WaitForCompletion()
+    {
+        _criteriaMetTime = Time.time;
+
+        yield return null;
+
+        while( Time.time - _criteriaMetTime <= completionDelay)
+        {
+            if (IsAllCriteriaMet())
+                yield return null;
+            else
+                yield break;
+        }
+
+        //Then set puzzle as done and begin transition sequence
+        OnPuzzleDone?.Invoke();
+
+        ServiceLocator.TryGetService(out AudioService audio);
+        audio.Source.PlayOneShot(audio.sfx_victory);
+    }
+
+    private bool IsAllCriteriaMet()
+    {
+        float[] progressAmounts = new float[_criteria.Length]; 
+        
+        foreach(ItemContainer container in _containers)
+        {
+            for (int i = 0; i < _criteria.Length; i++)
+            {
+                var criterion = _criteria[i];
+                progressAmounts[i] = criterion.Rule.GetProgress(container, criterion.number, criterion.invert);
+            }
+
+            bool allCriteriaMet = progressAmounts.All((prog) => prog >= 1);
+
+            if (allCriteriaMet)
+                continue;
+            else
+                return false;
+        }
+        
+        return true;
+    }
+
     private IEnumerator NotifyScoreChange(ItemContainer container)
     {
-        float[] progressAmounts = new float[_criteria.Length];
-        for (int i = 0; i < _criteria.Length; i++)
+        _containers.Add(container);
+        float[] progressAmounts = new float[_criteria.Length]; for (int i = 0; i < _criteria.Length; i++)
         {
             var criterion = _criteria[i];
             progressAmounts[i] = criterion.Rule.GetProgress(container, criterion.number, criterion.invert);
@@ -58,11 +108,12 @@ public class GameSession : MonoBehaviour
 
         ScoreChanged?.Invoke(_rulePanelModel);
         //Debug.Log("Score: " + Score);
-        bool allCriteriaMet = progressAmounts.All((prog) => prog >= 1);
-        if(allCriteriaMet)
+        Func<bool> allCriteriaMet = () => progressAmounts.All((prog) => prog >= 1);
+
+        if(allCriteriaMet())
         {
             CriteriaMet?.Invoke();
-            OnPuzzleDone?.Invoke();
+            StartCoroutine(WaitForCompletion());
             Debug.Log("Puzzle Completed");
         }
     }

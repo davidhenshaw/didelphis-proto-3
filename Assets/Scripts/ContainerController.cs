@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -179,18 +178,18 @@ public class ContainerController : MonoBehaviour
         }
     }
 
-    private void OnGUI()
-    {
-        if ( GUILayout.Button("Done!", GUILayout.MinHeight(50), GUILayout.MinWidth(200)) )
-        {
-            CloseContainer();
-        }
+    //private void OnGUI()
+    //{
+    //    if ( GUILayout.Button("Done!", GUILayout.MinHeight(50), GUILayout.MinWidth(200)) )
+    //    {
+    //        CloseContainer();
+    //    }
 
-        if ( GUILayout.Button("Spawn Container",  GUILayout.MinHeight(50), GUILayout.MinWidth(200)) )
-        {
-            SpawnContainer();
-        }
-    }
+    //    if ( GUILayout.Button("Spawn Container",  GUILayout.MinHeight(50), GUILayout.MinWidth(200)) )
+    //    {
+    //        SpawnContainer();
+    //    }
+    //}
 
 
     private void SpawnContainer()

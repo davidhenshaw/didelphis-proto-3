@@ -131,6 +131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1444825032927844451, guid: da836d8bd921d064084c1812e9531f71, type: 3}
+      propertyPath: sfx_victory
+      value: 
+      objectReference: {fileID: 8300000, guid: 65c967c2d375efd4287b14d539f5d34d, type: 3}
     - target: {fileID: 2717137011931225808, guid: da836d8bd921d064084c1812e9531f71, type: 3}
       propertyPath: _criteria.Array.size
       value: 2
@@ -219,10 +223,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadFirstImmediate: 1
   levels:
-  - sceneAsset: {fileID: 102900000, guid: c2d035a4ff29d2b44bcdfa3562da40ce, type: 3}
-    scenePath: Assets/Scenes/Levels/Lvl 1_1.unity
+  - sceneAsset: {fileID: 102900000, guid: 7e3400cc13c9f694296857ecd1d35982, type: 3}
+    scenePath: Assets/Scenes/Levels/Lvl 1_4.unity
+  - sceneAsset: {fileID: 102900000, guid: 3b263c043234c124f94c619a0c5efa63, type: 3}
+    scenePath: Assets/Scenes/Levels/Lvl 1_5.unity
   - sceneAsset: {fileID: 102900000, guid: e999eeec32823a441a379b27e3b44822, type: 3}
     scenePath: Assets/Scenes/Levels/Lvl 1_2.unity
+  - sceneAsset: {fileID: 102900000, guid: 20c55ee3329bcc64f9a9e88f67faaf42, type: 3}
+    scenePath: Assets/Scenes/Levels/Lvl 1_6.unity
+  - sceneAsset: {fileID: 102900000, guid: c2d035a4ff29d2b44bcdfa3562da40ce, type: 3}
+    scenePath: Assets/Scenes/Levels/Lvl 1_1.unity
 --- !u!1001 &2135191750095043577
 PrefabInstance:
   m_ObjectHideFlags: 0

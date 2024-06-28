@@ -607,7 +607,7 @@ MonoBehaviour:
   _containerPrefab: {fileID: 4503613409419180865}
   _mover: {fileID: 5238039017864500718}
   _moveOffset: {x: 0, y: -1}
-  _tickInterval: 0.8
+  _tickInterval: 0.5
   _audio: {fileID: 8813498745507652301}
   sfx_bagDone: {fileID: 8300000, guid: 9ce7a7ba9894c4546ab75c174e55b396, type: 3}
   sfx_bagSpawn: {fileID: 8300000, guid: 29318b36fd681cc478b74daa464c8137, type: 3}
