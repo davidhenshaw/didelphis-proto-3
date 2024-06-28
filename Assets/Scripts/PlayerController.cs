@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    Camera camera;
+    private Camera camera;
     public float preferredZPos = 0;
 
     public Sprite DefaultCursor;
@@ -26,7 +26,6 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        camera = Camera.main;
         UnityEngine.Cursor.visible = false;
 
         _audioSource = GetComponent<AudioSource>();
@@ -35,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        camera = Camera.main;
         _cursorSprite.sprite = DefaultCursor;
     }
 

@@ -24,8 +24,19 @@ public class SceneReferenceSequence : MonoBehaviour, IService
     // Start is called before the first frame update
     void Start()
     {
-        if (IsLevelLoaded())
+        if (IsLevelLoaded(out Scene loadedLevel))
+        {
+            //Find the loaded level's position in the sequence
+            for (int i = 0; i < levels.Length; i++)
+            {
+                if (levels[i].ScenePath.Contains(loadedLevel.name))
+                {
+                    currentLevel = i;
+                    break;
+                }
+            }
             return;
+        }
 
         if (loadFirstImmediate && levels.Length > 0)
         {
@@ -33,14 +44,18 @@ public class SceneReferenceSequence : MonoBehaviour, IService
         }
     }
 
-    bool IsLevelLoaded()
+    bool IsLevelLoaded(out Scene loadedLevel)
     {
         var index = 0;
         var scene = SceneManager.GetSceneAt(index);
+        loadedLevel = new Scene();
         while(scene.IsValid())
         {
             if (scene.name.StartsWith(LEVEL_PREFIX))
+            {
+                loadedLevel = scene;
                 return true;
+            }
 
             index++;
             scene = SceneManager.GetSceneAt(index);

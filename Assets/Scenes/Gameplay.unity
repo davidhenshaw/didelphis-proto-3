@@ -221,7 +221,7 @@ MonoBehaviour:
   levels:
   - sceneAsset: {fileID: 102900000, guid: c2d035a4ff29d2b44bcdfa3562da40ce, type: 3}
     scenePath: Assets/Scenes/Levels/Lvl 1_1.unity
-  - sceneAsset: {fileID: 102900000, guid: 0c2bb112b8c56d540ba2f692d4fdb64a, type: 3}
+  - sceneAsset: {fileID: 102900000, guid: e999eeec32823a441a379b27e3b44822, type: 3}
     scenePath: Assets/Scenes/Levels/Lvl 1_2.unity
 --- !u!1001 &2135191750095043577
 PrefabInstance:
