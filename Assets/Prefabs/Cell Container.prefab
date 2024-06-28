@@ -404,6 +404,8 @@ GameObject:
   - component: {fileID: 298717792859652849}
   - component: {fileID: 3787968888240301695}
   - component: {fileID: 8813498745507652301}
+  - component: {fileID: 3266123021926933024}
+  - component: {fileID: 5238039017864500718}
   m_Layer: 5
   m_Name: Cell Container
   m_TagString: Untagged
@@ -589,6 +591,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3266123021926933024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503613409419180865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6518c205ab01e2b419916849068df3bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _container: {fileID: 298717792859652849}
+  _containerPrefab: {fileID: 4503613409419180865}
+  _mover: {fileID: 5238039017864500718}
+  _moveOffset: {x: 0, y: -1}
+  _tickInterval: 0.8
+  _audio: {fileID: 8813498745507652301}
+  sfx_bagDone: {fileID: 8300000, guid: 9ce7a7ba9894c4546ab75c174e55b396, type: 3}
+  sfx_bagSpawn: {fileID: 8300000, guid: 29318b36fd681cc478b74daa464c8137, type: 3}
+--- !u!114 &5238039017864500718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4503613409419180865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31909df53540cd142a786604e971e9ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Container: {fileID: 298717792859652849}
 --- !u!1 &5061172175972624939
 GameObject:
   m_ObjectHideFlags: 0

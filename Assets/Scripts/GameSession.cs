@@ -1,8 +1,10 @@
+using Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameSession : MonoBehaviour
 {
@@ -13,9 +15,12 @@ public class GameSession : MonoBehaviour
     public static event Action<GameSession> GameSessionChanged;
     public static event Action CriteriaMet;
 
+    public UnityEvent OnPuzzleDone;
+
     [SerializeField]
     private Criteria[] _criteria;
     public Criteria[] CurrentCriteria => _criteria;
+
 
     private void Awake()
     {
@@ -57,6 +62,7 @@ public class GameSession : MonoBehaviour
         if(allCriteriaMet)
         {
             CriteriaMet?.Invoke();
+            OnPuzzleDone?.Invoke();
             Debug.Log("Puzzle Completed");
         }
     }

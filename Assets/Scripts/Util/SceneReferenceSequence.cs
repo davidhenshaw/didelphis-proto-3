@@ -1,9 +1,10 @@
+using Services;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneReferenceSequence : MonoBehaviour
+public class SceneReferenceSequence : MonoBehaviour, IService
 {
     public const string LEVEL_PREFIX = "Lvl";
 
@@ -14,6 +15,11 @@ public class SceneReferenceSequence : MonoBehaviour
     SceneReference[] levels;
 
     private int currentLevel;
+
+    private void Awake()
+    {
+        ServiceLocator.RegisterAsService(this);
+    }
 
     // Start is called before the first frame update
     void Start()
