@@ -46,22 +46,20 @@ public class SceneReferenceSequence : MonoBehaviour, IService
 
     bool IsLevelLoaded(out Scene loadedLevel)
     {
-        var index = 0;
-        var scene = SceneManager.GetSceneAt(index);
-        loadedLevel = new Scene();
-        while(scene.IsValid())
+        loadedLevel = default;
+
+        for(int i = 0; i < SceneManager.loadedSceneCount; i++)
         {
+            var scene = SceneManager.GetSceneAt(i);
             if (scene.name.StartsWith(LEVEL_PREFIX))
             {
                 loadedLevel = scene;
                 return true;
             }
 
-            index++;
-            scene = SceneManager.GetSceneAt(index);
         }
 
-        return false;
+        return loadedLevel.IsValid();
     }
 
     public SceneReference PeekNext()
