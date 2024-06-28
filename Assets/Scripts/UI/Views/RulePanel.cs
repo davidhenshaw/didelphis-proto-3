@@ -16,6 +16,12 @@ public class RulePanel : MonoBehaviour
         GameSession.ScoreChanged += UpdateViews;
     }
 
+    private void OnDisable()
+    {
+        GameSession.GameSessionChanged -= OnGameSessionInit;
+        GameSession.ScoreChanged -= UpdateViews;
+    }
+
     void OnGameSessionInit(GameSession gameSession)
     {
         _criteria = gameSession.CurrentCriteria;
