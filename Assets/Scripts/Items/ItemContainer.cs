@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class ItemContainer : MonoBehaviour, IGridContainer
+public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
 {
     [SerializeField]
     [Tooltip("A tilemap that determines which slots in this container are valid")]
@@ -138,7 +138,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         return;
     }
 
-    public bool TryAddItem(IGridContainable item, Vector2Int insertPos)
+    public virtual bool TryAddItem(IGridContainable item, Vector2Int insertPos)
     {
         if (!CanAddItem(item, insertPos))
             return false;
@@ -154,7 +154,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         return true;
     }
 
-    public bool TryRemoveItem(IGridContainable item)
+    public virtual bool TryRemoveItem(IGridContainable item)
     {
         if (!Cells.ContainsValue(item))
         {
@@ -225,7 +225,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         return result;
     }
 
-    public bool CanAddItem(IGridContainable item, Vector2Int insertPos)
+    public virtual bool CanAddItem(IGridContainable item, Vector2Int insertPos)
     {
         //Check if anchor position is free
         if (!IsCellFree(insertPos))
@@ -243,12 +243,12 @@ public class ItemContainer : MonoBehaviour, IGridContainer
         return true;
     }
 
-    public bool IsCellFree(Vector2Int cellPos)
+    public virtual bool IsCellFree(Vector2Int cellPos)
     {
         return IsCellValid(cellPos) && !Cells.ContainsKey(cellPos);
     }
 
-    public bool IsCellValid(Vector2Int cellPos)
+    public virtual bool IsCellValid(Vector2Int cellPos)
     {
         var tile = TileMap.GetTile<ContainerTile>((Vector3Int)cellPos); 
 
@@ -313,37 +313,4 @@ public struct MovementResult
     public bool CanMove;
     public Vector2Int DesiredPosition;
     public Vector2Int DesiredMovement;
-}
-
-public static class ContainerUtil
-{
-    public static int MoveAllItems(IGridContainer container, Vector2Int offset)
-    {
-        HashSet<IGridContainable> seenItems = new HashSet<IGridContainable>();
-        int moved = 0;
-        foreach(var pos in new List<Vector2Int>(container.Cells.Keys))
-        {
-            //The original item may have moved. So we try get value to see if the original item's position is even there
-            if (!container.Cells.TryGetValue(pos, out IGridContainable item))
-                continue;
-            if (seenItems.Contains(item)) // The cells dictionary has unique keys but non-unique values. So it's possible we see the same item twice
-                continue;
-
-            seenItems.Add(item);
-
-            container.TryRemoveItem(item);
-            var itemAnchor = container.GetAnchorCell(item);
-            if (!container.TryAddItem(item, itemAnchor + offset))
-            {//If this item could not be moved by the offset, put it back
-                container.TryAddItem(item, itemAnchor);
-                continue;
-            }
-            else
-            {
-                moved++;
-            }
-        }
-
-        return moved;
-    }
 }

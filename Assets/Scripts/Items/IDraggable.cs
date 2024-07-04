@@ -13,17 +13,24 @@ public interface IDraggable
     void OnDrop();
 }
 
+public interface IBucket
+{
+    void OnDrop(IGridContainable containable);
+    void OnHover(IGridContainable containable);
+    void OnHoverEnd();
+}
+
 public interface IGridContainer
 {
     Dictionary<Vector2Int, IGridContainable> Cells { get; }
 
     Vector2Int GetAnchorCell(IGridContainable item);
-    void OnDrop(IGridContainable containable);
+    //void OnDrop(IGridContainable containable);
     void OnPick(IGridContainable containable);
-    void OnHover(IGridContainable containable);
+    //void OnHover(IGridContainable containable);
     bool TryAddItem(IGridContainable item, Vector2Int insertPos);
     bool TryRemoveItem(IGridContainable item);
-    void OnHoverEnd();
+    //void OnHoverEnd();
 }
 
 public interface IGridContainable

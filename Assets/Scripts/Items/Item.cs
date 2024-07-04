@@ -76,7 +76,7 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
 
     private bool appQuitting = false;
 
-    private IGridContainer _tempContainer;
+    private IBucket _tempContainer;
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
@@ -121,7 +121,7 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         //loop through and pick the first container you find
         for (int i = 0; i < numOverlaps; i++)
         {
-            if (containers[i].TryGetComponent(out IGridContainer container))
+            if (containers[i].TryGetComponent(out IBucket container))
             {
                 container.OnDrop(this);
                 break;
@@ -150,7 +150,7 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         {
             for (int i = 0; i < numOverlap; i++)
             {
-                if (containers[i].TryGetComponent(out IGridContainer newContainer))
+                if (containers[i].TryGetComponent(out IBucket newContainer))
                 {
                     if (_tempContainer == null)
                         _tempContainer = newContainer;
