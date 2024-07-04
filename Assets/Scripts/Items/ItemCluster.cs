@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class ItemCluster : IGridContainer, IGridContainable
+public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 {
     public GameObject Owner => _anchorItem?.Owner;
 
@@ -19,9 +19,15 @@ public class ItemCluster : IGridContainer, IGridContainable
     private List<Vector2Int> _borderPos = new();
     public Vector2Int[] BorderPositions { get; }
 
-    public Dictionary<Vector2Int, IGridContainable> Cells { get; private set; }
+    public Dictionary<Vector2Int, IGridContainable> Cells { get; private set; } = new();
 
     private IGridContainable _anchorItem;
+    private Grid _grid;
+
+    private void Awake()
+    {
+        _grid = GetComponentInChildren<Grid>();
+    }
 
     public Vector2Int[] GetCellRelativePositions()
     {
@@ -62,9 +68,9 @@ public class ItemCluster : IGridContainer, IGridContainable
 
     }
 
-    public Tilemap GetTilemap()
+    public Grid GetGrid()
     {
-        return _anchorItem?.GetTilemap();
+        return _grid;
     }
 
     public void Rotate(Item.RotationType rotationType)
@@ -113,7 +119,8 @@ public class ItemCluster : IGridContainer, IGridContainable
             Cells.Add(containerCell, item);
         }
 
-        item.Container = this;
+        PrepareForAdd(item);
+
         return true;
     }
 
@@ -135,17 +142,76 @@ public class ItemCluster : IGridContainer, IGridContainable
             Cells.Remove(pos);
         }
 
-        item.Container = null;
+        PrepareForRemove(item);
         return true;
     }
 
     public Vector2Int GetAnchorCell(IGridContainable item)
     {
-        return (Vector2Int)_anchorItem.GetTilemap().WorldToCell(item.AnchorWorldPosition);
+        return (Vector2Int)_anchorItem.GetGrid().WorldToCell(item.AnchorWorldPosition);
     }
 
     public void OnPick(IGridContainable containable)
     {
         throw new System.NotImplementedException();
+    }
+
+    public void PrepareForAdd(IGridContainable item)
+    {
+        item.Owner.transform.SetParent(this.transform);
+
+        if(item.Owner.TryGetComponent(out CompositeCollider2D compositeCollider))
+        {
+            Destroy(compositeCollider);
+        }
+
+        if(item.Owner.TryGetComponent(out Rigidbody2D rb))
+        {
+            Destroy(rb);
+        }
+
+        item.Container = this;
+    }
+    public void PrepareForRemove(IGridContainable item)
+    {
+        item.Owner.transform.SetParent(transform.parent);
+
+        if(!item.Owner.TryGetComponent(out Rigidbody2D rb))
+        {
+            var rigidbody = item.Owner.AddComponent(typeof(Rigidbody2D)) as Rigidbody2D;
+            rigidbody.isKinematic = true;
+        }
+
+        if(!item.Owner.TryGetComponent(out CompositeCollider2D compositeCollider))
+        {
+            var collider = item.Owner.AddComponent(typeof(CompositeCollider2D)) as CompositeCollider2D;
+            collider.geometryType = CompositeCollider2D.GeometryType.Polygons;
+            collider.GenerateGeometry();
+            collider.generationType = CompositeCollider2D.GenerationType.Synchronous;
+        }
+
+        item.Container = null;
+    }
+    [ContextMenu(nameof(AddAllChildren))]
+    public void AddAllChildren()
+    {
+        var allItems = FindObjectsByType<Item>(FindObjectsSortMode.InstanceID);
+
+        foreach (var item in allItems)
+        {
+            var insertPosition = _grid.WorldToCell(item.AnchorWorldPosition);
+            TryAddItem(item, (Vector2Int)insertPosition);
+        }
+    }
+
+    [ContextMenu(nameof(RemoveAllChildren))]
+    public void RemoveAllChildren()
+    {
+        var allItems = GetComponentsInChildren<Item>();
+
+        foreach(var item in allItems)
+        {
+            TryRemoveItem(item);
+        }
     }
 }

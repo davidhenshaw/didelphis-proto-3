@@ -138,6 +138,9 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     public void OnDragStart(Transform target, Vector3 offset)
     {
+        if(!Collider)//re-cache the item's collider bc it may have changed
+            Collider = GetComponent<Collider2D>();
+
         if(Container != null)
         {
             Container.OnPick(this);
