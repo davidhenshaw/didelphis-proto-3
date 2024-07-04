@@ -11,6 +11,13 @@ public interface IDraggable
     public event DragEvent DragFinished;
     void OnDragStart(Transform target);
     void OnDrop();
+    void OnDrag();
+
+}
+
+public interface IRotate
+{
+    void Rotate(Item.RotationType rotationType);
 }
 
 public interface IBucket
@@ -42,7 +49,7 @@ public interface IGridContainable
     Vector3 AnchorWorldPosition { get; }
     Vector2Int[] GetCellRelativePositions();
     Vector2Int[] BorderPositions { get; }
-    Tilemap GetTilemap();
+    Grid GetGrid();
     void Rotate(Item.RotationType rotationType);
 
 }

@@ -13,7 +13,10 @@ public class PlayerController : MonoBehaviour
 
     SpriteRenderer _cursorSprite;
 
-    Item _heldObj;
+    GameObject _heldObj;
+    IDraggable _dragObj;
+    IRotate _rotateObj;
+
     Vector3 WorldPosition;
 
     [Space]
@@ -68,11 +71,14 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var collider = GetMouseRaycast();
-            if (collider && collider.TryGetComponent(out Item obj))
+            if (collider && collider.TryGetComponent(out IDraggable draggable))
             {
                 _audioSource.PlayOneShot(sfx_grab);
-                obj.OnDragStart(this.transform);
-                _heldObj = obj;
+                _heldObj = collider.gameObject;
+                _dragObj = draggable;
+                _heldObj.TryGetComponent<IRotate>(out _rotateObj);
+
+                _dragObj.OnDragStart(this.transform);
                 _cursorSprite.sprite = MouseDownCursor;
             }
         }
@@ -80,17 +86,17 @@ public class PlayerController : MonoBehaviour
         if (_heldObj == null)
             return;
 
-        _heldObj.OnDrag();
+        _dragObj.OnDrag();
 
         if(Input.GetButtonDown("RotateCW"))
         {
-            _heldObj.Rotate(Item.RotationType.ClockWise);
+            _rotateObj?.Rotate(Item.RotationType.ClockWise); 
             _audioSource.PlayOneShot(sfx_rotate);
         }
 
         if(Input.GetButtonDown("RotateCCW"))
         {
-            _heldObj.Rotate(Item.RotationType.CounterClockWise);
+            _rotateObj?.Rotate(Item.RotationType.CounterClockWise); 
             _audioSource.PlayOneShot(sfx_rotate);
         }
  
@@ -98,8 +104,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _audioSource.PlayOneShot(sfx_release);
-            _heldObj.OnDrop();
+            _dragObj.OnDrop();
+
             _heldObj = null;
+            _dragObj = null;
+            _rotateObj = null;
 
             _cursorSprite.sprite = DefaultCursor;
         }

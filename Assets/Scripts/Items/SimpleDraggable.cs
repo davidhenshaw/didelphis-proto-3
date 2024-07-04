@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,8 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
 
     public event IDraggable.DragEvent DragStarted;
     public event IDraggable.DragEvent DragFinished;
+
+    public Action OnDragCallback;
 
     protected virtual void Start()
     {
@@ -61,6 +64,7 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
     /// </summary>
     public virtual void OnDrag()
     {
+        OnDragCallback?.Invoke();
         //float dX = transform.position.x - _prevXPosition;
 
         //_goalSpringPos = dX > 0 ? 1 : -1;

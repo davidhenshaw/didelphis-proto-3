@@ -1,10 +1,12 @@
+using Sirenix.Utilities.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
+public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 {
     public static readonly float[][] ROTATION_NEG_90_MATRIX =
     {
@@ -22,9 +24,11 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         new float[]{1,0},
         new float[]{0,1}
     };
+    private const int MAX_COLLIDER_DEPTH = 15;
 
     public event Action Disabled;
     public event IBroadcastRotation.BroadcastRotationDelegate Rotated;
+    private SimpleDraggable _draggable;
 
     public GameObject Owner => gameObject;
     public Orientation Orientation { get; private set; }
@@ -52,9 +56,9 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
     [Tooltip("A tilemap that determines how much space this item takes up in a container")]
     public Tilemap _slotMap;
 
-    public Tilemap GetTilemap()
+    public virtual Grid GetGrid()
     {
-        return _slotMap;
+        return _slotMap.layoutGrid;
     }
 
     /// <summary>
@@ -84,6 +88,8 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
     private void Awake()
     {
         Properties = new List<ItemProperty>();
+        _draggable = GetComponent<SimpleDraggable>();
+
         foreach(var property in GetComponents<ItemProperty>())
         {
             Properties.Add(property);
@@ -93,11 +99,14 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         {
             Rotated += rotationListener.OnRotationChanged;
         }
+
+        _draggable.DragStarted += OnDragStart;
+        _draggable.DragFinished += OnDrop ;
+        _draggable.OnDragCallback += OnDrag;
     }
 
-    protected override void Start()
+    protected void Start()
     {
-        base.Start();
         Application.quitting += () => appQuitting = true;
         //Make sure the tile map is as small as it can be
         _slotMap.CompressBounds();
@@ -108,10 +117,8 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         RecalculateAnchor();
     }
 
-    public override void OnDrop()
+    public void OnDrop(Transform target, Vector3 offset)
     {
-        base.OnDrop();
-
         _tempContainer?.OnHoverEnd();
 
         //Find a container that overlaps this item
@@ -129,9 +136,8 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
         }
     }
 
-    public override void OnDragStart(Transform target)
+    public void OnDragStart(Transform target, Vector3 offset)
     {
-        base.OnDragStart( target);
         if(Container != null)
         {
             Container.OnPick(this);
@@ -139,10 +145,8 @@ public class Item : SimpleDraggable, IGridContainable, IBroadcastRotation
 
     }
 
-    public override void OnDrag()
+    public void OnDrag()
     {
-        base.OnDrag();
-
         //Find a container that overlaps this item
         var containers = new Collider2D[MAX_COLLIDER_DEPTH];
         var numOverlap = Collider.OverlapCollider(_contactFilter, containers);
