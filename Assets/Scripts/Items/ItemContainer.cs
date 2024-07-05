@@ -85,7 +85,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
 
     public void OnHover(IGridContainable item)
     {
-        var containerAnchor = TileMap.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
+        var containerAnchor = (Vector3Int)GetAnchorCell(item);
         var nearestPos = TileMap.GetCellCenterWorld(containerAnchor);
 
         List<Vector3Int> containerCells = new List<Vector3Int>();
@@ -113,8 +113,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
     public bool AddAndSnapToNearest(IGridContainable item)
     {
         //Get nearest cell to anchor
-        var nearestCell = TileMap.WorldToCell(item.AnchorLocalPosition + item.Owner.transform.position);
-        var nearestPos = TileMap.GetCellCenterWorld(nearestCell);
+        var nearestCell = GetAnchorCell(item);
 
         //Check if item can be inserted at cell position
         if (!TryAddItem(item, (Vector2Int)nearestCell))
@@ -124,7 +123,7 @@ public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
         }
 
         //Move item to grid position
-        item.Owner.transform.position = nearestPos - item.AnchorLocalPosition;
+        ContainerUtil.SnapToCell(item, nearestCell, TileMap.layoutGrid);
         _audioSource.PlayOneShot(sfx_itemAdded);
         return true;
     }
@@ -282,15 +281,14 @@ public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
         }
     }
 
-    private void CopyTileMapDatas(IGridContainable containable, Vector2Int insertPos)
+    private void CopyTileMapDatas(IGridContainable item, Vector2Int insertPos)
     {
-        Item item = containable.Owner.GetComponent<Item>();
         foreach(var pos in item.GetCellRelativePositions())
         {
-            var itemTilePos = (Vector3Int)(pos + item.AnchorCell);
+            var itemTilePos = (Vector3Int)(pos + item.LocalGridAnchor);
             Vector3Int containerPos = (Vector3Int)(pos + insertPos);
 
-            var tile = item._slotMap.GetTile(itemTilePos);
+            var tile = item.GetLayoutTilemap().GetTile(itemTilePos);
             ItemTileMap.SetTile(containerPos, tile);
         }
     }

@@ -45,11 +45,12 @@ public interface IGridContainable
     GameObject Owner { get; }
     Orientation Orientation { get; }
     IGridContainer Container { get; set; }
+    Vector2Int LocalGridAnchor { get; }
     Vector3 AnchorLocalPosition { get; }
     Vector3 AnchorWorldPosition { get; }
     Vector2Int[] GetCellRelativePositions();
     Vector2Int[] BorderPositions { get; }
-    Grid GetGrid();
+    Tilemap GetLayoutTilemap();
     void Rotate(Item.RotationType rotationType);
 
 }

@@ -56,9 +56,9 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
     [Tooltip("A tilemap that determines how much space this item takes up in a container")]
     public Tilemap _slotMap;
 
-    public virtual Grid GetGrid()
+    public virtual Tilemap GetLayoutTilemap()
     {
-        return _slotMap.layoutGrid;
+        return _slotMap;
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
     /// </summary>
     private Vector2Int _anchorCell;
 
-    public Vector2Int AnchorCell => _anchorCell;
+    public Vector2Int LocalGridAnchor => _anchorCell;
     private Grid _slotMapGrid;
     protected Collider2D Collider;
 
@@ -103,18 +103,20 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         _draggable.DragStarted += OnDragStart;
         _draggable.DragFinished += OnDrop ;
         _draggable.OnDragCallback += OnDrag;
+
+        _slotMapGrid = GetComponentInChildren<Grid>();
+        Collider = GetComponent<Collider2D>();
+
+        _slotMap.CompressBounds();
+        RecalculateAnchor();
     }
 
     protected void Start()
     {
         Application.quitting += () => appQuitting = true;
         //Make sure the tile map is as small as it can be
-        _slotMap.CompressBounds();
 
-        _slotMapGrid = GetComponentInChildren<Grid>();
-        Collider = GetComponent<Collider2D>();
 
-        RecalculateAnchor();
     }
 
     public void OnDrop(Transform target, Vector3 offset)

@@ -3,6 +3,15 @@ using UnityEngine;
 
 public static class ContainerUtil
 {
+    public static void SnapToCell(IGridContainable item, Vector2Int cell, Grid containerGrid)
+    {
+        var targetPosition = containerGrid.GetCellCenterWorld((Vector3Int)cell);
+
+        //Actually move the item
+        item.Owner.transform.position = targetPosition - item.AnchorLocalPosition;
+        return;
+    }
+
     public static bool IsContiguous(ICollection<Vector3Int> cells)
     {
         if (cells.Count <= 1)

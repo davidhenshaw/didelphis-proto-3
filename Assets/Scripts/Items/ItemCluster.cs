@@ -6,40 +6,81 @@ using UnityEngine.Tilemaps;
 
 public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 {
-    public GameObject Owner => _anchorItem?.Owner;
+    public GameObject Owner => gameObject;
 
     public Orientation Orientation { get; private set; }
 
     public IGridContainer Container { get; set; }
 
-    public Vector3 AnchorLocalPosition => _anchorItem.AnchorLocalPosition;
+    public Vector3 AnchorLocalPosition => _tilemap.GetCellCenterLocal((Vector3Int)_anchorGridCell);
 
-    public Vector3 AnchorWorldPosition => _anchorItem.AnchorWorldPosition;
+    public Vector3 AnchorWorldPosition => _tilemap.GetCellCenterWorld((Vector3Int)_anchorGridCell);
 
     private List<Vector2Int> _borderPos = new();
-    public Vector2Int[] BorderPositions { get; }
+    public Vector2Int[] BorderPositions => _borderPos.ToArray();
 
     public Dictionary<Vector2Int, IGridContainable> Cells { get; private set; } = new();
 
+    private List<Vector2Int> _localCellPositions = new();
     private IGridContainable _anchorItem;
-    private Grid _grid;
+    private Vector2Int _anchorGridCell;
+    public Vector2Int LocalGridAnchor => _anchorGridCell;
+    private Tilemap _tilemap;
+    private SimpleDraggable _draggable;
+
+    private Collider2D _collider;
+
+    private IBucket _tempDropBucket;
+    private int MAX_COLLIDER_DEPTH = 15;
+
+
+    public bool addChildrenOnStart = true;
+    [SerializeField]
+    protected ContactFilter2D _contactFilter;
 
     private void Awake()
     {
-        _grid = GetComponentInChildren<Grid>();
+        _tilemap = GetComponentInChildren<Tilemap>();
+        _draggable = GetComponent<SimpleDraggable>();
+
+        _draggable.DragStarted += OnDragStart;
+        _draggable.DragFinished += OnDrop;
+        _draggable.OnDragCallback += OnDrag;
+    }
+
+    private void Start()
+    {
+        if(addChildrenOnStart)
+        {
+            var allItems = GetComponentsInChildren<Item>();
+
+            foreach (var item in allItems)
+            {
+                var insertPosition = _tilemap.WorldToCell(item.AnchorWorldPosition);
+                TryAddItem(item, (Vector2Int)insertPosition);
+            }
+        }
+
+        RecalculateBorderPositions();
+    }
+
+    private void OnDisable()
+    {
+        _draggable.DragStarted -= OnDragStart;
+        _draggable.DragFinished -= OnDrop;
+        _draggable.OnDragCallback -= OnDrag;
     }
 
     public Vector2Int[] GetCellRelativePositions()
     {
-        var allItems = new HashSet<IGridContainable>(Cells.Values);
-        var cellPositions = new List<Vector2Int>();
+        var relativePositions = new HashSet<Vector2Int>();
 
-        foreach(var item in allItems)
+        foreach (var item in Cells.Keys)
         {
-            cellPositions.AddRange(item.GetCellRelativePositions());
+            relativePositions.Add(item - _anchorGridCell);
         }
 
-        return cellPositions.ToArray();
+        return relativePositions.ToArray();
     }
     
     public void RecalculateBorderPositions()
@@ -68,14 +109,84 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 
     }
 
-    public Grid GetGrid()
+    public Tilemap GetLayoutTilemap()
     {
-        return _grid;
+        return _tilemap;
     }
 
     public void Rotate(Item.RotationType rotationType)
     {
         throw new System.NotImplementedException();
+    }
+
+    public void OnDrop(Transform target, Vector3 offset)
+    {
+        _tempDropBucket?.OnHoverEnd();
+
+        //Find a container that overlaps this item
+        var containers = new Collider2D[MAX_COLLIDER_DEPTH];
+        var numOverlaps = _collider.OverlapCollider(_contactFilter, containers);
+
+        //loop through and pick the first container you find
+        for (int i = 0; i < numOverlaps; i++)
+        {
+            if (containers[i].TryGetComponent(out IBucket container))
+            {
+                container.OnDrop(this);
+                break;
+            }
+        }
+    }
+
+    public void OnDragStart(Transform target, Vector3 offset)
+    {
+        if(!_collider)//re-cache the item's collider bc it may have changed
+            _collider = GetComponent<Collider2D>();
+
+        if(Container != null)
+        {
+            Container.OnPick(this);
+        }
+
+    }
+
+    public void OnDrag()
+    {
+        //Find a container that overlaps this item
+        var containers = new Collider2D[MAX_COLLIDER_DEPTH];
+        var numOverlap = _collider.OverlapCollider(_contactFilter, containers);
+        if(numOverlap > 0)
+        {
+            for (int i = 0; i < numOverlap; i++)
+            {
+                if (containers[i].TryGetComponent(out IBucket newContainer))
+                {
+                    if (_tempDropBucket == null)
+                        _tempDropBucket = newContainer;
+
+                    if (newContainer.Equals(_tempDropBucket))
+                    {
+                        _tempDropBucket.OnHover(this);
+                    }
+                    else
+                    {
+                        _tempDropBucket.OnHoverEnd();
+                        _tempDropBucket = newContainer;
+                        _tempDropBucket.OnHover(this);
+                    }
+
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (_tempDropBucket != null)
+            {
+                _tempDropBucket.OnHoverEnd();
+                _tempDropBucket = null;
+            }
+        }
     }
 
     public bool CanAddItem(IGridContainable item, Vector2Int insertPos)
@@ -105,10 +216,17 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 
     public bool TryAddItem(IGridContainable item, Vector2Int insertPos)
     {
-        //new items must be contiguous with existing items in the cluster
-        foreach(var localCell in item.GetCellRelativePositions())
+
+        if(Cells.Count == 0)
         {
-            var containerCell = localCell + insertPos;
+            _anchorItem = item;
+            _anchorGridCell = insertPos;
+        }
+
+        //new items must be contiguous with existing items in the cluster
+        foreach(var relativeCell in item.GetCellRelativePositions())
+        {
+            var containerCell = relativeCell + insertPos;
 
             if (Cells.ContainsKey(containerCell))
             {
@@ -120,6 +238,14 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
         }
 
         PrepareForAdd(item);
+        ContainerUtil.SnapToCell(item, insertPos, _tilemap.layoutGrid);
+        CopyTileMapDatas(item, insertPos);
+
+        if (Cells.Count == 0)
+        {
+            _anchorItem = null;
+        }
+
 
         return true;
     }
@@ -145,10 +271,22 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
         PrepareForRemove(item);
         return true;
     }
+    private void CopyTileMapDatas(IGridContainable item, Vector2Int insertPos)
+    {
+        foreach (var pos in item.GetCellRelativePositions())
+        {
+            var itemTilePos = (Vector3Int)(pos + item.LocalGridAnchor);
+            Vector3Int containerPos = (Vector3Int)(pos + insertPos);
+
+            var tile = item.GetLayoutTilemap().GetTile(itemTilePos);
+            _tilemap.SetTile(containerPos, tile);
+        }
+    }
+
 
     public Vector2Int GetAnchorCell(IGridContainable item)
     {
-        return (Vector2Int)_anchorItem.GetGrid().WorldToCell(item.AnchorWorldPosition);
+        return (Vector2Int)_anchorItem.GetLayoutTilemap().WorldToCell(item.AnchorWorldPosition);
     }
 
     public void OnPick(IGridContainable containable)
@@ -199,7 +337,7 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 
         foreach (var item in allItems)
         {
-            var insertPosition = _grid.WorldToCell(item.AnchorWorldPosition);
+            var insertPosition = _tilemap.WorldToCell(item.AnchorWorldPosition);
             TryAddItem(item, (Vector2Int)insertPosition);
         }
     }
