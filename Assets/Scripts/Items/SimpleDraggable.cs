@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[RequireComponent(typeof(Collider2D))]
 public class SimpleDraggable : MonoBehaviour, IDraggable
 {
     public static int MAX_COLLIDER_DEPTH = 15;
@@ -18,8 +17,9 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
 
     public event IDraggable.DragEvent DragStarted;
     public event IDraggable.DragEvent DragFinished;
-
     public Action OnDragCallback;
+
+    public GameObject Owner => gameObject;
 
     protected virtual void Start()
     {

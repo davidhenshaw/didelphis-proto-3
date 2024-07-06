@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
+public class ItemContainer : MonoBehaviour, IGridContainer, IDragBucket
 {
     [SerializeField]
     [Tooltip("A tilemap that determines which slots in this container are valid")]
@@ -83,8 +83,11 @@ public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
         _view.UpdateViewWithModel(_outlineUIModel);
     }
 
-    public void OnHover(IGridContainable item)
+    public void OnHover(IDraggable draggable)
     {
+        if (!draggable.Owner.TryGetComponent(out IGridContainable item))
+            return;
+
         var containerAnchor = (Vector3Int)GetAnchorCell(item);
         var nearestPos = TileMap.GetCellCenterWorld(containerAnchor);
 
@@ -99,13 +102,16 @@ public class ItemContainer : MonoBehaviour, IGridContainer, IBucket
         _view.UpdateViewWithModel(_outlineUIModel);
     }
 
-    public void OnDrop(IGridContainable draggable)
+    public void OnDrop(IDraggable draggable)
     {
+        if (!draggable.Owner.TryGetComponent(out IGridContainable item))
+            return;
+
         OnHoverEnd();
-        if(AddAndSnapToNearest(draggable))
+        if(AddAndSnapToNearest(item))
         {
-            var anchorPos = GetAnchorCell(draggable);
-            ItemAdded?.Invoke(draggable);
+            var anchorPos = GetAnchorCell(item);
+            ItemAdded?.Invoke(item);
             _audioSource.PlayOneShot(sfx_itemAdded);
         }
     }

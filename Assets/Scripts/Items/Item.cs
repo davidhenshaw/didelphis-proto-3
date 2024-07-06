@@ -73,7 +73,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     private bool appQuitting = false;
 
-    private IBucket _tempDragBucket;
+    private IDragBucket _tempDragBucket;
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
@@ -119,9 +119,9 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         //loop through and pick the first container you find
         for (int i = 0; i < numOverlaps; i++)
         {
-            if (containers[i].TryGetComponent(out IBucket container))
+            if (containers[i].TryGetComponent(out IDragBucket container))
             {
-                container.OnDrop(this);
+                container.OnDrop(_draggable);
                 break;
             }
         }
@@ -148,20 +148,20 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         {
             for (int i = 0; i < numOverlap; i++)
             {
-                if (containers[i].TryGetComponent(out IBucket newContainer))
+                if (containers[i].TryGetComponent(out IDragBucket newContainer))
                 {
                     if (_tempDragBucket == null)
                         _tempDragBucket = newContainer;
 
                     if (newContainer.Equals(_tempDragBucket))
                     {
-                        _tempDragBucket.OnHover(this);
+                        _tempDragBucket.OnHover(_draggable);
                     }
                     else
                     {
                         _tempDragBucket.OnHoverEnd();
                         _tempDragBucket = newContainer;
-                        _tempDragBucket.OnHover(this);
+                        _tempDragBucket.OnHover(_draggable);
                     }
 
                     break;

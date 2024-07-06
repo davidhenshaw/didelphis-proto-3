@@ -12,7 +12,7 @@ public interface IDraggable
     void OnDragStart(Transform target);
     void OnDrop();
     void OnDrag();
-
+    GameObject Owner { get; }
 }
 
 public interface IRotate
@@ -20,10 +20,10 @@ public interface IRotate
     void Rotate(Item.RotationType rotationType);
 }
 
-public interface IBucket
+public interface IDragBucket
 {
-    void OnDrop(IGridContainable containable);
-    void OnHover(IGridContainable containable);
+    void OnDrop(IDraggable containable);
+    void OnHover(IDraggable containable);
     void OnHoverEnd();
 }
 
@@ -32,12 +32,9 @@ public interface IGridContainer
     Dictionary<Vector2Int, IGridContainable> Cells { get; }
 
     Vector2Int GetAnchorCell(IGridContainable item);
-    //void OnDrop(IGridContainable containable);
     void OnPick(IGridContainable containable);
-    //void OnHover(IGridContainable containable);
     bool TryAddItem(IGridContainable item, Vector2Int insertPos);
     bool TryRemoveItem(IGridContainable item);
-    //void OnHoverEnd();
 }
 
 public interface IGridContainable
@@ -51,8 +48,6 @@ public interface IGridContainable
     Vector2Int[] GetCellRelativePositions();
     Vector2Int[] BorderPositions { get; }
     Tilemap GetLayoutTilemap();
-    void Rotate(Item.RotationType rotationType);
-
 }
 
 public enum Orientation
