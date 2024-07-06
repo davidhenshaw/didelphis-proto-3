@@ -28,7 +28,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     public event Action Disabled;
     public event IBroadcastRotation.BroadcastRotationDelegate Rotated;
-    private SimpleDraggable _draggable;
+    protected SimpleDraggable _draggable;
 
     public GameObject Owner => gameObject;
     public Orientation Orientation { get; private set; }
@@ -37,16 +37,9 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
     /// <summary>
     /// Local position (unity units) of this item's anchor cell
     /// </summary>
-    public Vector3 AnchorLocalPosition { get; private set; }
+    public Vector3 AnchorLocalPosition => _slotMap.GetCellCenterLocal((Vector3Int)_anchorGridCell);
 
-    public Vector3 AnchorWorldPosition
-    {
-        get
-        {
-            //return AnchorLocalPosition + Owner.transform.position;
-            return _slotMapGrid.GetCellCenterWorld((Vector3Int)_anchorCell);
-        }
-    }
+    public Vector3 AnchorWorldPosition => _slotMap.GetCellCenterWorld((Vector3Int)_anchorGridCell);
 
     public ItemAttribute Attributes;
 
@@ -64,17 +57,17 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
     /// <summary>
     /// Position of all item's cells relative to the anchor position
     /// </summary>
-    private List<Vector2Int> _relativePos = new List<Vector2Int>();
-    private List<Vector2Int> _borderPos = new List<Vector2Int>();
+    protected List<Vector2Int> _relativePos = new List<Vector2Int>();
+    protected List<Vector2Int> _borderPos = new List<Vector2Int>();
 
     public Vector2Int[] BorderPositions => _borderPos.ToArray();
 
     /// <summary>
     /// Reference point on local grid for all item's cell positions
     /// </summary>
-    private Vector2Int _anchorCell;
+    protected Vector2Int _anchorGridCell;
 
-    public Vector2Int LocalGridAnchor => _anchorCell;
+    public Vector2Int LocalGridAnchor => _anchorGridCell;
     private Grid _slotMapGrid;
     protected Collider2D Collider;
 
@@ -84,8 +77,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
-
-    private void Awake()
+    protected virtual void Awake()
     {
         Properties = new List<ItemProperty>();
         _draggable = GetComponent<SimpleDraggable>();
@@ -111,15 +103,12 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         RecalculateAnchor();
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
-        Application.quitting += () => appQuitting = true;
-        //Make sure the tile map is as small as it can be
-
-
+        //Application.quitting += () => appQuitting = true;
     }
 
-    public void OnDrop(Transform target, Vector3 offset)
+    public virtual void OnDrop(Transform target, Vector3 offset)
     {
         _tempContainer?.OnHoverEnd();
 
@@ -138,7 +127,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         }
     }
 
-    public void OnDragStart(Transform target, Vector3 offset)
+    public virtual void OnDragStart(Transform target, Vector3 offset)
     {
         if(!Collider)//re-cache the item's collider bc it may have changed
             Collider = GetComponent<Collider2D>();
@@ -150,7 +139,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     }
 
-    public void OnDrag()
+    public virtual void OnDrag()
     {
         //Find a container that overlaps this item
         var containers = new Collider2D[MAX_COLLIDER_DEPTH];
@@ -189,7 +178,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         }
     }
 
-    public void Rotate(RotationType rotationType)
+    public virtual void Rotate(RotationType rotationType)
     {
         float oldRotation = (int)Orientation * -90;
         float rotationDegrees = 0;
@@ -224,8 +213,8 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
             newPositions.Add(newPosition);
 
             // Remove old tiles and cache their new positions
-            var localGridCell = (Vector3Int)(_anchorCell + cell);
-            var newGridCell = (Vector3Int)(_anchorCell + newPosition);
+            var localGridCell = (Vector3Int)(_anchorGridCell + cell);
+            var newGridCell = (Vector3Int)(_anchorGridCell + newPosition);
             var tile = _slotMap.GetTile(localGridCell);
             newTiles.Add(newGridCell, tile);
             _slotMap.SetTile(localGridCell, null);
@@ -247,18 +236,12 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
             spriteTf.eulerAngles.y,
             (int)Orientation * -90
             );
-        RecalculateAnchorWorldPos();
         RecalculateBorderPositions();
 
         Rotated?.Invoke(oldRotation, (int)Orientation * -90);
     }
 
-    private void RecalculateAnchorWorldPos()
-    {
-        AnchorLocalPosition = _slotMapGrid.GetCellCenterWorld((Vector3Int)_anchorCell) - transform.position;
-    }
-
-    public Vector2Int[] GetCellRelativePositions()
+    public virtual Vector2Int[] GetCellRelativePositions()
     {
         return _relativePos.ToArray();
     }
@@ -266,10 +249,10 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
     public void RemoveLocalCell(Vector2Int cell)
     {
         _relativePos.Remove(cell);
-        _slotMap.SetTile((Vector3Int)(_anchorCell+cell), null);
+        _slotMap.SetTile((Vector3Int)(_anchorGridCell+cell), null);
     }
 
-    public void RecalculateBorderPositions()
+    public virtual void RecalculateBorderPositions()
     {
         BoundsInt bounds = _slotMap.cellBounds;
 
@@ -285,7 +268,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
             }
 
             // Calculate current cell's position offset and add to list
-            var offsetPos = (Vector2Int)pos - _anchorCell;
+            var offsetPos = (Vector2Int)pos - _anchorGridCell;
 
             // Calculate border cells
             var adjacents = ContainerController.GetAdjacents(offsetPos);
@@ -305,7 +288,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     }
 
-    public void RecalculateAnchor()
+    public virtual void RecalculateAnchor()
     {
         BoundsInt bounds = _slotMap.cellBounds;
         bool anchorFound = false;
@@ -325,12 +308,11 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
             if(!anchorFound)
             {
                 anchorFound = true;
-                _anchorCell = (Vector2Int)pos;
-                AnchorLocalPosition = _slotMapGrid.GetCellCenterLocal((Vector3Int)_anchorCell);
+                _anchorGridCell = (Vector2Int)pos;
             }
 
             // Calculate current cell's position offset and add to list
-            var offsetPos = (Vector2Int)pos - _anchorCell;
+            var offsetPos = (Vector2Int)pos - _anchorGridCell;
             _relativePos.Add(offsetPos);
             positionSet.Add(offsetPos);
 

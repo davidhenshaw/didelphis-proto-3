@@ -213,6 +213,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36930ccfab8c1cb49b54c39b4cb433a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Attributes: 0
+  _slotMap: {fileID: 5326178063308651373}
   _contactFilter:
     useTriggers: 1
     useLayerMask: 1
@@ -227,6 +229,7 @@ MonoBehaviour:
     maxDepth: 0
     minNormalAngle: 0
     maxNormalAngle: 0
+  addChildrenOnStart: 1
 --- !u!114 &2430156797233471923
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,29 +4,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
+public class ItemCluster : Item, IGridContainable, IGridContainer
 {
-    public GameObject Owner => gameObject;
-
-    public Orientation Orientation { get; private set; }
-
-    public IGridContainer Container { get; set; }
-
-    public Vector3 AnchorLocalPosition => _tilemap.GetCellCenterLocal((Vector3Int)_anchorGridCell);
-
-    public Vector3 AnchorWorldPosition => _tilemap.GetCellCenterWorld((Vector3Int)_anchorGridCell);
-
-    private List<Vector2Int> _borderPos = new();
-    public Vector2Int[] BorderPositions => _borderPos.ToArray();
-
     public Dictionary<Vector2Int, IGridContainable> Cells { get; private set; } = new();
 
     private List<Vector2Int> _localCellPositions = new();
     private IGridContainable _anchorItem;
-    private Vector2Int _anchorGridCell;
-    public Vector2Int LocalGridAnchor => _anchorGridCell;
     private Tilemap _tilemap;
-    private SimpleDraggable _draggable;
 
     private Collider2D _collider;
 
@@ -35,11 +19,10 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 
 
     public bool addChildrenOnStart = true;
-    [SerializeField]
-    protected ContactFilter2D _contactFilter;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         _tilemap = GetComponentInChildren<Tilemap>();
         _draggable = GetComponent<SimpleDraggable>();
 
@@ -48,8 +31,9 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
         _draggable.OnDragCallback += OnDrag;
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         if(addChildrenOnStart)
         {
             var allItems = GetComponentsInChildren<Item>();
@@ -71,7 +55,7 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
         _draggable.OnDragCallback -= OnDrag;
     }
 
-    public Vector2Int[] GetCellRelativePositions()
+    public override Vector2Int[] GetCellRelativePositions()
     {
         var relativePositions = new HashSet<Vector2Int>();
 
@@ -83,7 +67,7 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
         return relativePositions.ToArray();
     }
     
-    public void RecalculateBorderPositions()
+    public override void RecalculateBorderPositions()
     {
         var localCellPos = GetCellRelativePositions();
 
@@ -109,84 +93,9 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 
     }
 
-    public Tilemap GetLayoutTilemap()
+    public override void Rotate(Item.RotationType rotationType)
     {
-        return _tilemap;
-    }
-
-    public void Rotate(Item.RotationType rotationType)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void OnDrop(Transform target, Vector3 offset)
-    {
-        _tempDropBucket?.OnHoverEnd();
-
-        //Find a container that overlaps this item
-        var containers = new Collider2D[MAX_COLLIDER_DEPTH];
-        var numOverlaps = _collider.OverlapCollider(_contactFilter, containers);
-
-        //loop through and pick the first container you find
-        for (int i = 0; i < numOverlaps; i++)
-        {
-            if (containers[i].TryGetComponent(out IBucket container))
-            {
-                container.OnDrop(this);
-                break;
-            }
-        }
-    }
-
-    public void OnDragStart(Transform target, Vector3 offset)
-    {
-        if(!_collider)//re-cache the item's collider bc it may have changed
-            _collider = GetComponent<Collider2D>();
-
-        if(Container != null)
-        {
-            Container.OnPick(this);
-        }
-
-    }
-
-    public void OnDrag()
-    {
-        //Find a container that overlaps this item
-        var containers = new Collider2D[MAX_COLLIDER_DEPTH];
-        var numOverlap = _collider.OverlapCollider(_contactFilter, containers);
-        if(numOverlap > 0)
-        {
-            for (int i = 0; i < numOverlap; i++)
-            {
-                if (containers[i].TryGetComponent(out IBucket newContainer))
-                {
-                    if (_tempDropBucket == null)
-                        _tempDropBucket = newContainer;
-
-                    if (newContainer.Equals(_tempDropBucket))
-                    {
-                        _tempDropBucket.OnHover(this);
-                    }
-                    else
-                    {
-                        _tempDropBucket.OnHoverEnd();
-                        _tempDropBucket = newContainer;
-                        _tempDropBucket.OnHover(this);
-                    }
-
-                    break;
-                }
-            }
-        }
-        else
-        {
-            if (_tempDropBucket != null)
-            {
-                _tempDropBucket.OnHoverEnd();
-                _tempDropBucket = null;
-            }
-        }
+        base.Rotate(rotationType);
     }
 
     public bool CanAddItem(IGridContainable item, Vector2Int insertPos)
@@ -283,7 +192,6 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
         }
     }
 
-
     public Vector2Int GetAnchorCell(IGridContainable item)
     {
         return (Vector2Int)_anchorItem.GetLayoutTilemap().WorldToCell(item.AnchorWorldPosition);
@@ -296,6 +204,9 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
 
     public void PrepareForAdd(IGridContainable item)
     {
+        if (item.Equals(this))
+            return;
+
         item.Owner.transform.SetParent(this.transform);
 
         if(item.Owner.TryGetComponent(out CompositeCollider2D compositeCollider))
@@ -312,6 +223,9 @@ public class ItemCluster : MonoBehaviour, IGridContainable, IGridContainer
     }
     public void PrepareForRemove(IGridContainable item)
     {
+        if (item.Equals(this))
+            return;
+
         item.Owner.transform.SetParent(transform.parent);
 
         if(!item.Owner.TryGetComponent(out Rigidbody2D rb))
