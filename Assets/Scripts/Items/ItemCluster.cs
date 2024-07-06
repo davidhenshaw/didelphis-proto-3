@@ -7,28 +7,12 @@ using UnityEngine.Tilemaps;
 public class ItemCluster : Item, IGridContainable, IGridContainer
 {
     public Dictionary<Vector2Int, IGridContainable> Cells { get; private set; } = new();
-
-    private List<Vector2Int> _localCellPositions = new();
     private IGridContainable _anchorItem;
-    private Tilemap _tilemap;
-
-    private Collider2D _collider;
-
-    private IBucket _tempDropBucket;
-    private int MAX_COLLIDER_DEPTH = 15;
-
-
     public bool addChildrenOnStart = true;
 
     protected override void Awake()
     {
         base.Awake();
-        _tilemap = GetComponentInChildren<Tilemap>();
-        _draggable = GetComponent<SimpleDraggable>();
-
-        _draggable.DragStarted += OnDragStart;
-        _draggable.DragFinished += OnDrop;
-        _draggable.OnDragCallback += OnDrag;
     }
 
     protected override void Start()
@@ -40,7 +24,7 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
 
             foreach (var item in allItems)
             {
-                var insertPosition = _tilemap.WorldToCell(item.AnchorWorldPosition);
+                var insertPosition = _slotMap.WorldToCell(item.AnchorWorldPosition);
                 TryAddItem(item, (Vector2Int)insertPosition);
             }
         }
@@ -147,7 +131,7 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
         }
 
         PrepareForAdd(item);
-        ContainerUtil.SnapToCell(item, insertPos, _tilemap.layoutGrid);
+        ContainerUtil.SnapToCell(item, insertPos, _slotMap.layoutGrid);
         CopyTileMapDatas(item, insertPos);
 
         if (Cells.Count == 0)
@@ -188,7 +172,7 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
             Vector3Int containerPos = (Vector3Int)(pos + insertPos);
 
             var tile = item.GetLayoutTilemap().GetTile(itemTilePos);
-            _tilemap.SetTile(containerPos, tile);
+            _slotMap.SetTile(containerPos, tile);
         }
     }
 
@@ -251,7 +235,7 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
 
         foreach (var item in allItems)
         {
-            var insertPosition = _tilemap.WorldToCell(item.AnchorWorldPosition);
+            var insertPosition = _slotMap.WorldToCell(item.AnchorWorldPosition);
             TryAddItem(item, (Vector2Int)insertPosition);
         }
     }

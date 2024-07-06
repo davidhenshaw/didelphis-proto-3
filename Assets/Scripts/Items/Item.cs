@@ -73,7 +73,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     private bool appQuitting = false;
 
-    private IBucket _tempContainer;
+    private IBucket _tempDragBucket;
     [SerializeField]
     protected ContactFilter2D _contactFilter;
 
@@ -110,7 +110,7 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
 
     public virtual void OnDrop(Transform target, Vector3 offset)
     {
-        _tempContainer?.OnHoverEnd();
+        _tempDragBucket?.OnHoverEnd();
 
         //Find a container that overlaps this item
         var containers = new Collider2D[MAX_COLLIDER_DEPTH];
@@ -150,18 +150,18 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
             {
                 if (containers[i].TryGetComponent(out IBucket newContainer))
                 {
-                    if (_tempContainer == null)
-                        _tempContainer = newContainer;
+                    if (_tempDragBucket == null)
+                        _tempDragBucket = newContainer;
 
-                    if (newContainer.Equals(_tempContainer))
+                    if (newContainer.Equals(_tempDragBucket))
                     {
-                        _tempContainer.OnHover(this);
+                        _tempDragBucket.OnHover(this);
                     }
                     else
                     {
-                        _tempContainer.OnHoverEnd();
-                        _tempContainer = newContainer;
-                        _tempContainer.OnHover(this);
+                        _tempDragBucket.OnHoverEnd();
+                        _tempDragBucket = newContainer;
+                        _tempDragBucket.OnHover(this);
                     }
 
                     break;
@@ -170,10 +170,10 @@ public class Item : MonoBehaviour, IGridContainable, IBroadcastRotation, IRotate
         }
         else
         {
-            if (_tempContainer != null)
+            if (_tempDragBucket != null)
             {
-                _tempContainer.OnHoverEnd();
-                _tempContainer = null;
+                _tempDragBucket.OnHoverEnd();
+                _tempDragBucket = null;
             }
         }
     }

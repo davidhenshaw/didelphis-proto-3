@@ -258,9 +258,6 @@ namespace metakazz.FSM
 
     public class FSM
     {
-        static string INIT_ERROR = "State Machine has not yet been initialized. Did you call Init()?";
-        static string ORPHAN_STATE_ERROR = "State {0} does not have a From transition. The state machine will be unable to leave this state once entered";
-
         private string _currentStateID;
         public string CurrentState { get => _currentStateID; }
         private StateRecord _currentStateRecord;
@@ -273,7 +270,6 @@ namespace metakazz.FSM
 
 
         private static List<Transition> EmptyTransitions = new List<Transition>(0);
-        private bool _initialized = false;
 
         public bool SuppressWarnings = false;
         public bool DebugLogging { get; set; } = false;

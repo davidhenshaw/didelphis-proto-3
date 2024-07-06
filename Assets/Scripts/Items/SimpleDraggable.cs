@@ -12,13 +12,6 @@ public class SimpleDraggable : MonoBehaviour, IDraggable
 
     private Transform _followTarget;
     private Vector3 _offset;
-    [SerializeField]
-    private float _maxRotation = 30;
-
-    [SerializeField]
-    private float _springFrequency = 0.4f;
-    [SerializeField]
-    private float _springDamping = 0.5f;
 
     [SerializeField]
     private DraggableResponder[] _responders;

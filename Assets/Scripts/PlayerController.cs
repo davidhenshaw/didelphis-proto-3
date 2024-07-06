@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Camera camera;
+    private Camera mainCamera;
     public float preferredZPos = 0;
 
     public Sprite DefaultCursor;
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        camera = Camera.main;
+        mainCamera = Camera.main;
         _cursorSprite.sprite = DefaultCursor;
     }
 
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 worldPos = camera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         worldPos.z = preferredZPos;
         WorldPosition = worldPos;
         transform.position = worldPos;
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
 
     Collider2D GetMouseRaycast()
     {
-        var ray = camera.ScreenPointToRay(Input.mousePosition);
+        var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         //var ray = new Ray(camera.transform.position, WorldPosition - camera.transform.position);
         RaycastHit2D hitInfo = Physics2D.GetRayIntersection(ray, 100, LayerMask.GetMask("Default"));
 
