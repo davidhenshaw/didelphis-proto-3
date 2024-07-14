@@ -79,7 +79,7 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
 
     public override void Rotate(Item.RotationType rotationType)
     {
-        base.Rotate(rotationType);
+        //base.Rotate(rotationType);
     }
 
     public bool CanAddItem(IGridContainable item, Vector2Int insertPos)
@@ -162,6 +162,11 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
         }
 
         PrepareForRemove(item);
+
+        if(Cells.Count == 0)
+        {
+            Destroy(gameObject);
+        }
         return true;
     }
     private void CopyTileMapDatas(IGridContainable item, Vector2Int insertPos)
@@ -247,6 +252,9 @@ public class ItemCluster : Item, IGridContainable, IGridContainer
 
         foreach(var item in allItems)
         {
+            if (item.Equals(this))
+                continue;
+
             TryRemoveItem(item);
         }
     }
